@@ -153,12 +153,13 @@ namespace Mobile_Backend.Controllers
             string email = AuthController.JwtNameExtractor(token);
 
             var dbUser = _repository.User.GetUserByEmail(email);
-            dbUser.Password = user.Password;
 
             if (dbUser == null)
             {
-                return BadRequest("Invalid client request");
+                return BadRequest("Invalid client request, User was not found");
             }
+
+            dbUser.Password = user.Password;
 
             if (!ModelState.IsValid)
             {
@@ -232,6 +233,25 @@ namespace Mobile_Backend.Controllers
             _emailSender.SendEmailAsync(user.Email, "Your password for Studi App has been resetted.", $"<b>Your password: {newPassword}</b>");
 
             return NoContent();
+
+        }
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult GetUser()
+        {
+            string token = Request.Headers["Authorization"];
+            string email = AuthController.JwtNameExtractor(token);
+
+            var user = _repository.User.GetUserByEmail(email);
+
+            if (user == null)
+            {
+                _logger.LogError($"User with email {user.Email} was not found");
+                return BadRequest($"User with email {user.Email} was not found");
+            }
+
+            return Ok(user);
 
         }
 
