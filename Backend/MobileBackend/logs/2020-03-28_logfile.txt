@@ -1,0 +1,40 @@
+2020-03-28 20:59:32.2355 INFO Email: julius-wiegert@web.de
+2020-03-28 20:59:33.0345 ERROR Something went wrong inside Register action: An error occurred while updating the entries. See the inner exception for details.
+2020-03-28 21:01:03.9688 INFO Email: julius-wiegert@web.de
+2020-03-28 21:01:04.4093 INFO HIER1
+2020-03-28 21:01:04.7064 ERROR Something went wrong inside Register action: An error occurred while updating the entries. See the inner exception for details.
+2020-03-28 21:02:26.2190 INFO Email: julius-wiegert@web.de
+2020-03-28 21:02:26.6412 INFO HIER1
+2020-03-28 21:02:26.6412 INFO 203812
+2020-03-28 21:02:26.9397 ERROR Something went wrong inside Register action: An error occurred while updating the entries. See the inner exception for details.
+2020-03-28 21:04:21.4090 INFO Email: julius-wiegert@web.de
+2020-03-28 21:04:21.7592 INFO HIER1
+2020-03-28 21:04:21.7592 INFO 418453
+2020-03-28 21:04:21.9295 INFO HIER2
+2020-03-28 21:04:21.9925 ERROR Something went wrong inside Register action: An error occurred while updating the entries. See the inner exception for details.
+2020-03-28 21:06:50.9446 INFO Email: julius-wiegert@web.de
+2020-03-28 21:06:51.3631 INFO HIER1
+2020-03-28 21:06:51.3631 INFO 249225
+2020-03-28 21:06:51.5512 INFO HIER1.5
+2020-03-28 21:06:51.6140 INFO HIER2
+2020-03-28 21:06:52.2733 ERROR Problem occured during sending an email: Authentication required
+2020-03-28 21:09:20.4537 INFO Email: julius-wiegert@web.de
+2020-03-28 21:09:20.8688 INFO HIER1
+2020-03-28 21:09:20.8688 INFO 695912
+2020-03-28 21:09:21.0513 INFO HIER1.5
+2020-03-28 21:09:21.1107 INFO HIER2
+2020-03-28 21:09:21.8395 ERROR Problem occured during sending an email: 535: Authentication credentials invalid
+2020-03-28 21:19:49.1730 INFO Email: julius-wiegert@web.de
+2020-03-28 21:19:49.6353 INFO HIER1
+2020-03-28 21:19:49.6353 INFO 506727
+2020-03-28 21:19:49.8284 INFO HIER1.5
+2020-03-28 21:19:49.8890 INFO HIER2
+2020-03-28 21:19:50.0937 ERROR Problem occured during sending an email: Der angegebene Host ist unbekannt
+2020-03-28 21:20:23.1640 INFO Email: julius-wiegert@web.de
+2020-03-28 21:20:23.6349 INFO HIER1
+2020-03-28 21:20:23.6349 INFO 535654
+2020-03-28 21:20:23.8236 INFO HIER1.5
+2020-03-28 21:20:23.8797 INFO HIER2
+2020-03-28 21:20:24.8203 ERROR Problem occured during sending an email: 535: 5.7.8 Username and Password not accepted. Learn more at
+5.7.8  https://support.google.com/mail/?p=BadCredentials y200sm13745337wmc.20 - gsmtp
+2020-03-28 21:23:02.7648 INFO Email: julius-wiegert@web.de

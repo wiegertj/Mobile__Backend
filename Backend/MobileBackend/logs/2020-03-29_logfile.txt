@@ -1,0 +1,39 @@
+2020-03-29 11:27:41.4569 ERROR Invalid user object sent from client.
+2020-03-29 11:29:17.0983 ERROR Invalid user object sent from client.
+2020-03-29 11:30:02.7724 ERROR Invalid user object sent from client.
+2020-03-29 11:30:44.6094 INFO HierJulius
+2020-03-29 11:30:44.6444 ERROR Invalid user object sent from client.
+2020-03-29 11:32:31.9117 INFO HierJulius
+2020-03-29 11:32:32.4351 INFO HIER1
+2020-03-29 11:32:32.4367 INFO 607440
+2020-03-29 11:32:32.6424 INFO HIER1.5
+2020-03-29 11:32:32.7032 INFO HIER2
+2020-03-29 11:32:34.4025 INFO Email sent successfully: julius-wiegert@web.de
+2020-03-29 11:35:15.3298 INFO HierJulius
+2020-03-29 11:35:17.2949 INFO Email sent successfully: julius-wiegert@web.de
+2020-03-29 11:37:47.4704 ERROR Invalid exercise object sent from client.
+2020-03-29 12:07:01.2050 ERROR Something went wrong inside ChangeUser action: Object reference not set to an instance of an object.
+2020-03-29 12:16:05.8786 ERROR Something went wrong inside ChangeUser action: Object reference not set to an instance of an object.
+2020-03-29 12:16:48.9756 ERROR Something went wrong inside ChangeUser action: Object reference not set to an instance of an object.
+2020-03-29 12:19:28.2727 ERROR Something went wrong inside ChangeUser action: Object reference not set to an instance of an object.
+2020-03-29 12:20:31.3168 ERROR Something went wrong inside ChangeUser action: Object reference not set to an instance of an object.
+2020-03-29 12:21:37.3112 ERROR Something went wrong inside ChangeUser action: Object reference not set to an instance of an object.
+2020-03-29 12:21:46.2443 ERROR Something went wrong inside ChangeUser action: Object reference not set to an instance of an object.
+2020-03-29 12:24:38.9645 INFO Hierjulius-wiegert@web.de
+2020-03-29 12:24:39.0199 INFO Hierjulius-wiegert@web.de
+2020-03-29 12:26:21.0146 INFO Hierjulius-wiegert@web.de
+2020-03-29 12:26:21.0146 INFO Hierjulius-wiegert@web.de
+2020-03-29 12:26:34.5435 INFO Hierjulius-wiegert@web.de
+2020-03-29 12:26:34.5489 INFO Hierjulius-wiegert@web.de
+2020-03-29 12:31:27.9282 INFO Hierjulius-wiegert@web.de
+2020-03-29 12:31:27.9779 INFO Hierjulius-wiegert@web.de
+2020-03-29 12:31:40.6383 INFO Hierjulius-wiegert@web.de
+2020-03-29 12:31:40.6424 INFO Hierjulius-wiegert@web.de
+2020-03-29 12:32:16.3837 INFO Hierjulius-wiegert@web.de
+2020-03-29 12:32:16.7978 INFO Hierjulius-wiegert@web.de
+2020-03-29 12:32:22.2969 INFO Hierjulius-wiegert@web.de
+2020-03-29 12:32:22.2969 INFO Hierjulius-wiegert@web.de
+2020-03-29 12:51:00.1261 ERROR User: julius-wiegert@web.de was not found
+2020-03-29 13:15:07.7710 INFO HierJulius
+2020-03-29 13:15:10.1062 INFO Email sent successfully: julius-wiegert@web.de
+2020-03-29 13:17:05.7987 INFO Email sent successfully: julius-wiegert@web.de
