@@ -41,7 +41,7 @@ namespace Mobile_Backend.Extensions
         public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration config)
         {
             var connectionString = config["mysqlconnection:connectionString"];
-            services.AddDbContext<Entities.RepositoryContext>(o => o.UseMySql(connectionString));
+            services.AddDbContext<Entities.RepositoryContext>(o => o.UseMySql(connectionString), ServiceLifetime.Transient);
         }
 
         public static void ConfigureRepositoryWrapper(this IServiceCollection services)

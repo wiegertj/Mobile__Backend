@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Globalization;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace Mobile_Backend.Extensions
 {
@@ -50,6 +52,25 @@ namespace Mobile_Backend.Extensions
         {
             Random generator = new Random();
             return generator.Next(0, 999999).ToString("D6");
+        }
+
+        public static string JwtNameExtractor(string token)
+        {
+            token = token.Split(' ')[1];
+
+            var jwtHandler = new JwtSecurityTokenHandler();
+            if (jwtHandler.CanReadToken(token))
+            {
+                var readToken = jwtHandler.ReadJwtToken(token);
+                var payload = readToken.Claims.FirstOrDefault(e => e.Type.Equals("email"));
+                var email = payload.Value;
+
+                return email;
+            }
+            else
+            {
+                return "";
+            }
         }
     }
 }

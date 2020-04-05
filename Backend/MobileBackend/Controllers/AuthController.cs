@@ -54,7 +54,7 @@ namespace Mobile_Backend.Controllers
                     issuer: "http://localhost:5000",
                     audience: "http://localhost:5000",
                     claims: new List<Claim>(),
-                    expires: DateTime.Now.AddMinutes(5),
+                    expires: DateTime.Now.AddMinutes(20),
                     signingCredentials: signinCredentials
                     );
 
@@ -95,6 +95,12 @@ namespace Mobile_Backend.Controllers
                 }
             }
 
+            if (!_repository.University.CheckIfExisting(user.University_Id)) {
+
+                return BadRequest("Choosen UniversityId was not found!");
+
+            }
+
             try
             {
                 var userPwd = AuthControllerExtensions.GenerateFirstPassword();
@@ -129,7 +135,7 @@ namespace Mobile_Backend.Controllers
             }
 
             try {
-                var userMail = JwtNameExtractor(Request.Headers["Authorization"]);
+                var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
                 var dbUser = _repository.User.GetUserByEmail(userMail);
 
                 dbUser.Map(user);
@@ -150,7 +156,7 @@ namespace Mobile_Backend.Controllers
         public IActionResult ChangePassword([FromBody]User user)
         {
             string token = Request.Headers["Authorization"];
-            string email = AuthController.JwtNameExtractor(token);
+            string email = AuthControllerExtensions.JwtNameExtractor(token);
 
             var dbUser = _repository.User.GetUserByEmail(email);
 
@@ -186,20 +192,52 @@ namespace Mobile_Backend.Controllers
         public IActionResult DeleteUser()
         {
             string token = Request.Headers["Authorization"];
-            string email = AuthController.JwtNameExtractor(token);
+            string email = AuthControllerExtensions.JwtNameExtractor(token);
 
             var dbUser = _repository.User.GetUserByEmail(email);
 
             try
-            {            
-                    _repository.User.DeleteUser(dbUser);
-                    _repository.Save();
+            {
+                // Delete all memberships of user
+                var removeUserToGroup = _repository.UserToGroup.GetMembershipsForUser(dbUser);
 
-                    return NoContent();            
+                foreach (var mem in removeUserToGroup)
+                {
+                        _repository.UserToGroup.DeleteMembership(mem);         
+                }
+
+                _repository.Save();
+
+                // Delete all groups of user
+                var groupsFromUser = _repository.Group.FindByCondition(gr => gr.AdminUserId == dbUser.Id).ToList();
+
+                var membershipsInGroupsFromUser = new List<UserToGroup>();
+
+                foreach (var group in groupsFromUser) {
+                    var tempMemberships = _repository.UserToGroup.GetMembershipsForGroup(group).ToList();
+                    foreach (var mem in tempMemberships) {
+                        membershipsInGroupsFromUser.Add(mem);
+                    }
+                }
+
+                foreach (var mem in membershipsInGroupsFromUser) {
+                    _repository.UserToGroup.DeleteMembership(mem);
+                }
+                _repository.Save();
+
+                foreach (var group in groupsFromUser) {
+                    _repository.Group.DeleteGroup(group);
+                }
+                _repository.Save();
+
+                _repository.User.DeleteUser(dbUser);
+                _repository.Save();
+
+                return NoContent();            
             }
             catch(Exception e)
             {
-                _logger.LogError($"Something went wrong inside DeleteUser action: {e.Message}");
+                _logger.LogError($"Something went wrong inside DeleteUser action: {e.InnerException}");
                 return StatusCode(500, "Internal server error");
             }
         }
@@ -241,7 +279,7 @@ namespace Mobile_Backend.Controllers
         public IActionResult GetUser()
         {
             string token = Request.Headers["Authorization"];
-            string email = AuthController.JwtNameExtractor(token);
+            string email = AuthControllerExtensions.JwtNameExtractor(token);
 
             var user = _repository.User.GetUserByEmail(email);
 
@@ -253,25 +291,6 @@ namespace Mobile_Backend.Controllers
 
             return Ok(user);
 
-        }
-
-        public static string JwtNameExtractor(string token)
-        {
-            token = token.Split(' ')[1];
-
-            var jwtHandler = new JwtSecurityTokenHandler();
-            if (jwtHandler.CanReadToken(token))
-            {
-                var readToken = jwtHandler.ReadJwtToken(token);
-                var payload = readToken.Claims.FirstOrDefault(e => e.Type.Equals("email"));
-                var email = payload.Value;
-
-                return email;
-            }
-            else
-            {
-                return "";
-            }
         }
     }
 }
