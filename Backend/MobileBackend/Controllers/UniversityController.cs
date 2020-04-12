@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Contracts;
+﻿using Contracts;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace Mobile_Backend.Controllers
 {
@@ -24,9 +21,16 @@ namespace Mobile_Backend.Controllers
         [HttpGet]
         public IActionResult GetUniversities()
         {
-            var listUniversities = _repository.University.GetUniversities();
-
-            return Ok(listUniversities);
+            try
+            {
+                var listUniversities = _repository.University.GetUniversities();
+                return Ok(listUniversities);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Something went wrong inside GetUniversities: {e.Message}");
+                return StatusCode(500, "Something went wrong while getting the universities");
+            }
         }
     }
 }

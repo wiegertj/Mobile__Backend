@@ -1,9 +1,5 @@
-﻿
-using Entities.Models;
+﻿using Entities.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Entities
 {
@@ -18,5 +14,7 @@ namespace Entities
         public DbSet<University> Universities { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<UserToGroup> UserToGroups { get; set; }
+        public DbSet<Subgroup> Subgroups { get; set; }
+        public DbSet<UserToSubgroup> UserToSubgroups { get; set; }
     }
 }

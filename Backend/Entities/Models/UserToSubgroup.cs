@@ -2,11 +2,11 @@
 
 namespace Entities.Models
 {
-    [Table("User_to_Group")]
-    public class UserToGroup : IEntity
+    [Table("User_To_Subgroup")]
+    public class UserToSubgroup : IEntity
     {
         public long Id { get; set; }
+        public long SubgroupId { get; set; }
         public long UserId { get; set; }
-        public long GroupId { get; set; }
     }
 }

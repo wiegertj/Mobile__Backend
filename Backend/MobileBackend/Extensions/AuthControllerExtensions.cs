@@ -3,6 +3,10 @@ using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.RegularExpressions;
 using System.Linq;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace Mobile_Backend.Extensions
 {
@@ -12,8 +16,10 @@ namespace Mobile_Backend.Extensions
         public static bool IsValidEmail(string email)
         {
             if (string.IsNullOrWhiteSpace(email))
+            {
                 return false;
-
+            }
+                
             try
             {
                 email = Regex.Replace(email, @"(@)(.+)$", DomainMapper,
@@ -52,6 +58,24 @@ namespace Mobile_Backend.Extensions
         {
             Random generator = new Random();
             return generator.Next(0, 999999).ToString("D6");
+        }
+
+        public static string GenerateToken(string email) 
+        {
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
+            var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+
+            var tokenOptions = new JwtSecurityToken(
+                issuer: "http://localhost:5000",
+                audience: "http://localhost:5000",
+                claims: new List<Claim>(),
+                expires: DateTime.Now.AddMinutes(10),
+                signingCredentials: signinCredentials
+                );
+
+            tokenOptions.Payload["email"] = email;
+
+            return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
         }
 
         public static string JwtNameExtractor(string token)

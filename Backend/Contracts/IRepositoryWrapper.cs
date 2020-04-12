@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Contracts
+﻿namespace Contracts
 {
     public interface IRepositoryWrapper
     {
@@ -10,6 +6,8 @@ namespace Contracts
         IUniversityRepository University { get; }
         IGroupRepository Group { get; }
         IUserToGroupRepository UserToGroup { get; }
+        ISubgroupRepository Subgroup { get; }
+        IUserToSubgroupRepository UserToSubgroup { get; }
         void Save();
     }
 }

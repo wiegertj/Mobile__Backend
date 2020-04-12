@@ -1,8 +1,5 @@
 ﻿using Contracts;
 using Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Repository
 {
@@ -14,6 +11,8 @@ namespace Repository
         private IUniversityRepository _universityRepository;
         private IGroupRepository _groupRepository;
         private IUserToGroupRepository _userToGroupRepository;
+        private ISubgroupRepository _subgroupRepository;
+        private IUserToSubgroupRepository _userToSubgroupRepository;
 
         public RepositoryWrapper(RepositoryContext repositoryContext)
         {
@@ -68,6 +67,30 @@ namespace Repository
                 }
 
                 return _userToGroupRepository;
+            }
+        }
+
+        public ISubgroupRepository Subgroup
+        {
+            get
+            {
+                if (_subgroupRepository == null) {
+                    _subgroupRepository = new SubgroupRepository(_repoContext);
+                }
+
+                return _subgroupRepository;
+            }
+        }
+
+        public IUserToSubgroupRepository UserToSubgroup
+        {
+            get
+            {
+                if (_userToSubgroupRepository == null) {
+                    _userToSubgroupRepository = new UserToSubgroupRepository(_repoContext);
+                }
+
+                return _userToSubgroupRepository;
             }
         }
 

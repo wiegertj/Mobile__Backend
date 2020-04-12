@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Contracts;
 using Entities.Extensions;
 using Entities.Models;
@@ -31,18 +30,17 @@ namespace Mobile_Backend.Controllers
         {
             if (group == null)
             {
-                return BadRequest("Invalid client request");
+                return BadRequest("Invalid client request: group object was null");
             }
 
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid user object sent from client.");
-                return BadRequest("Invalid model object");
+                _logger.LogError("Invalid user: model state not valid");
+                return BadRequest("Invalid user: model state not valid");
             }
 
             try
             {
-
                 var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
                 var dbUser = _repository.User.GetUserByEmail(userMail);
 
@@ -51,11 +49,20 @@ namespace Mobile_Backend.Controllers
                 _repository.Group.CreateGroup(group);
                 _repository.Save();
 
+                var adminMembership = new UserToGroup()
+                {
+                    GroupId = group.Id,
+                    UserId = dbUser.Id
+                };
+
+                _repository.UserToGroup.AddMembership(adminMembership);
+                _repository.Save();
+
                 return Ok(_repository.Group.GetGroupById(group.Id));
             }
             catch (Exception e) {
-                _logger.LogError($"Group object is not valid");
-                return BadRequest($"Group object is not valid");
+                _logger.LogError($"Something went wrong inside CreateGroup: {e.Message}");
+                return BadRequest("Something went wrong while creating group, the group was not saved!");
             }
         }
 
@@ -77,24 +84,45 @@ namespace Mobile_Backend.Controllers
 
             if (!(group.AdminUserId == dbUser.Id))
             {
-                _logger.LogError("Only admin can delte groups!");
+                _logger.LogError("Only admin can delte his groups!");
                 return BadRequest("Only group admin can delete this group!");
             }
 
-            var listOfMembers = _repository.UserToGroup.GetMembershipsForGroup(group);
-
-            foreach (var mem in listOfMembers)
+            try
             {
-                _repository.UserToGroup.DeleteMembership(mem);
+                var listOfMembers = _repository.UserToGroup.GetMembershipsForGroup(group).ToList();
+                var subgroups = _repository.Subgroup.GetSubgroupsForGroup(group.Id).ToList();
+
+                foreach (var subgroup in subgroups)
+                {
+                    var memberships = _repository.UserToSubgroup.GetMembershipsForSubgroup(subgroup).ToList();
+
+                    foreach (var mem in memberships)
+                    {
+                        _repository.UserToSubgroup.DeleteMembership(mem);
+                        _repository.Save();
+                    }
+
+                    _repository.Subgroup.DeleteGroup(subgroup);
+                    _repository.Save();
+                }
+
+                foreach (var mem in listOfMembers)
+                {
+                    _repository.UserToGroup.DeleteMembership(mem);
+                }
+
+                _repository.Save();
+                _repository.Group.DeleteGroup(group);
+                _repository.Save();
+
+                return NoContent();
             }
-
-            _repository.Save();
-
-            _repository.Group.DeleteGroup(group);
-
-            _repository.Save();
-
-            return NoContent();
+            catch(Exception e)
+            {
+                _logger.LogError($"Something went wrong inside DeleteGroup: {e.Message}");
+                return StatusCode(500, "Something went wrong during deleting the group");
+            }
         }
 
         [Authorize]
@@ -103,47 +131,62 @@ namespace Mobile_Backend.Controllers
 
             if (group == null)
             {
-                return BadRequest("Invalid client request");
+                return BadRequest("Invalid client request: Group object was null");
             }
 
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid user object sent from client.");
-                return BadRequest("Invalid model object");
+                _logger.LogError("Invalid group object sent from client.");
+                return BadRequest("Invalid group object sent from client.");
             }
 
-            var dbGroup = _repository.Group.GetGroupById(group.Id);
+            try
+            {
+                var dbGroup = _repository.Group.GetGroupById(group.Id);
 
-            var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
-            var dbUser = _repository.User.GetUserByEmail(userMail);
+                var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
+                var dbUser = _repository.User.GetUserByEmail(userMail);
 
-            if (dbUser.Id == dbGroup.AdminUserId) {
-                dbGroup.Map(group);
-                _repository.Group.Update(dbGroup);
-                _repository.Save();
-                return NoContent();
+                if (dbUser.Id == dbGroup.AdminUserId)
+                {
+                    dbGroup.Map(group);
+                    _repository.Group.Update(dbGroup);
+                    _repository.Save();
+                    return NoContent();
+                }
+
+                _logger.LogError("Only admin can change group");
+                return BadRequest("Only admin can change group");
             }
-
-            _logger.LogError("Only admin can change group");
-            return BadRequest("Only admin can change group");
+            catch (Exception e)
+            {
+                _logger.LogError($"Something went wrong inside UpdateGroup: {e.Message}");
+                return StatusCode(500, "Internal Server Error while updating the group");
+            }
         }
 
         [Authorize]
         [HttpGet, Route("members")]
         public IActionResult GetMembers([FromBody] Group group)
         {
-
             group = _repository.Group.GetGroupById(group.Id);
 
             if (group == null)
             {
-                _logger.LogError($"Group with id {group.Id} was not found!");
-                return BadRequest("Invalid client request");
+                _logger.LogError($"Group was not found!");
+                return BadRequest("Group was not found!");
             }
 
-            var listMembers = _repository.UserToGroup.GetMembersForGroup(group);
-
-            return Ok(listMembers);
+            try
+            {
+                var listMembers = _repository.UserToGroup.GetMembersForGroup(group).ToList();
+                return Ok(listMembers);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Something went wrong inside GetMembers: {e.Message}");
+                return StatusCode(500, "Internal Server Error while getting the members for the group");
+            }
         }
 
         [Authorize]
@@ -153,18 +196,18 @@ namespace Mobile_Backend.Controllers
 
             if (group == null)
             {
-                _logger.LogError($"Group with id {userToGroupParam.GroupId} was not found!");
-                return BadRequest("Invalid client request");
+                _logger.LogError("Group was not found!");
+                return BadRequest("Invalid client request: Group was not found");
             }
 
             var userToAdd = _repository.User.FindByCondition(us => us.Id == userToGroupParam.UserId).FirstOrDefault();    
 
             if (userToAdd == null) {
-                _logger.LogError($"User with id {userToAdd.Id} was not found!");
-                return BadRequest("Invalid client request");
+                _logger.LogError("User with this id was not found!");
+                return BadRequest("User with this id was not found!");
             }
 
-            var currentGroupMemberships = _repository.UserToGroup.GetMembershipsForGroup(group);
+            var currentGroupMemberships = _repository.UserToGroup.GetMembershipsForGroup(group).ToList();
 
             foreach (var mem in currentGroupMemberships) {
                 if (mem.UserId == userToAdd.Id) {
@@ -173,102 +216,126 @@ namespace Mobile_Backend.Controllers
                 }
             }
 
-            if (group.IsPublic.Equals("true")) {
-                var userToGroupPublic = new UserToGroup() {
+            try
+            {
+                if (group.IsPublic.Equals("true"))
+                {
+                    var userToGroupPublic = new UserToGroup()
+                    {
+                        UserId = userToAdd.Id,
+                        GroupId = group.Id
+                    };
+                    _repository.UserToGroup.AddMembership(userToGroupPublic);
+                    _repository.Save();
+                    return NoContent();
+                }
+
+                var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
+                var loggedInUser = _repository.User.GetUserByEmail(userMail);
+
+                if (loggedInUser.Id != group.AdminUserId)
+                {
+                    _logger.LogError("Logged in user is no admin therefore he cant add members");
+                    return BadRequest("Logged in user is no admin therefore he cant add members");
+                }
+
+                var userToGroup = new UserToGroup()
+                {
                     UserId = userToAdd.Id,
                     GroupId = group.Id
                 };
-                _repository.UserToGroup.AddMembership(userToGroupPublic);
+
+                _repository.UserToGroup.AddMembership(userToGroup);
                 _repository.Save();
                 return NoContent();
             }
-
-            var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
-            var loggedInUser = _repository.User.GetUserByEmail(userMail);
-
-            if (loggedInUser.Id != group.AdminUserId) {
-                _logger.LogError("Logged in user is no admin therefore he cant add members");
-                return BadRequest("Logged in user is no admin therefore he cant add members");
-            }
-
-            var userToGroup = new UserToGroup()
+            catch (Exception e)
             {
-                UserId = userToAdd.Id,
-                GroupId = group.Id
-            };
-
-            _repository.UserToGroup.AddMembership(userToGroup);
-            _repository.Save();
-            return NoContent();
+                _logger.LogError($"Something went wrong inside AddMember: {e.Message}");
+                return StatusCode(500, "Something went wrong while adding a new member");
+            }
         }
 
         [Authorize]
         [HttpDelete, Route("remove_member")]
         public IActionResult RemoveMember([FromBody] UserToGroup userToGroup) {
+
             var group = _repository.Group.GetGroupById(userToGroup.GroupId);
+            var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
+            var loggedInUser = _repository.User.GetUserByEmail(userMail);
 
             if (group == null)
             {
-                _logger.LogError($"Group with id {userToGroup.GroupId} was not found!");
-                return BadRequest("Invalid client request");
+                _logger.LogError("Group with was not found!");
+                return BadRequest("Group with was not found!");
             }
 
             var userToRemove = _repository.User.FindByCondition(us => us.Id == userToGroup.UserId).FirstOrDefault();
 
             if (userToRemove == null)
             {
-                _logger.LogError($"User with id {userToRemove.Id} was not found!");
-                return BadRequest("Invalid client request");
+                _logger.LogError("User with was not found!");
+                return BadRequest("User with was not found!");
             }
 
-            bool deleted = false;
-
-            if (group.IsPublic.Equals("true"))
+            // Admin cant be deleted from its group
+            if(userToRemove.Id == group.AdminUserId)
             {
-                var removeUserToGroup = _repository.UserToGroup.GetMembershipsForUser(userToRemove);
-
-                foreach (var mem in removeUserToGroup) {
-                    if (mem.GroupId == userToGroup.GroupId) {
-                        _repository.UserToGroup.DeleteMembership(mem);
-                        deleted = true;
-                        break;
-                    }
-                }
-
-                if (deleted) {
-                    _repository.Save();
-                    return NoContent();
-                }
-
-                _logger.LogError($"User is no member of this group!");
-                return BadRequest("User is no member of this group!");
+                _logger.LogError($"User with id {userToRemove.Id} is admin and cant be removed!");
+                return BadRequest($"User with id {userToRemove.Id} is admin and cant be removed!");
             }
 
-            var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
-            var loggedInUser = _repository.User.GetUserByEmail(userMail);
-
-            if (group.AdminUserId == loggedInUser.Id) {
-
-                var removeUserToGroup = _repository.UserToGroup.GetMembershipsForUser(userToRemove);
-
-                foreach (var mem in removeUserToGroup)
+            try
+            {
+                // Delete all subgroups if existing
+                if ((group.AdminUserId == loggedInUser.Id) || (loggedInUser.Id == userToRemove.Id))
                 {
-                    if (mem.GroupId == userToGroup.GroupId)
+                    var listSubgroups = _repository.Subgroup.GetSubgroupsForGroup(userToGroup.GroupId).ToList();
+
+                    foreach (var sgr in listSubgroups)
                     {
-                        _repository.UserToGroup.DeleteMembership(mem);
-                        deleted = true;
+                        var memberships = _repository.UserToSubgroup.GetMembershipsForSubgroup(sgr).ToList();
+                        foreach (var mem in memberships)
+                        {
+                            if (mem.UserId.Equals(userToRemove.Id))
+                            {
+                                _repository.UserToSubgroup.DeleteMembership(mem);
+                                _repository.Save();
+                            }
+                        }
                     }
+
+                    var removeUserToGroup = _repository.UserToGroup.GetMembershipsForUser(userToRemove);
+                    bool deleted = false;
+
+                    foreach (var mem in removeUserToGroup)
+                    {
+                        if (mem.GroupId == userToGroup.GroupId)
+                        {
+                            _repository.UserToGroup.DeleteMembership(mem);
+                            deleted = true;
+                            break;
+                        }
+                    }
+
+                    if (deleted)
+                    {
+                        _repository.Save();
+                        return NoContent();
+                    }
+
+                    _logger.LogError($"User is no member of this group!");
+                    return BadRequest("User is no member of this group!");
                 }
 
-                if (deleted) {
-                    _repository.Save();
-                    return NoContent();
-                }
-                
+                _logger.LogError("Only admins or members themself can delete their membership!");
+                return BadRequest("Only admins or members themself can delete their membership!");
             }
-
-            _logger.LogError($"Something went wrong");
-            return BadRequest("Something went wrong");
+            catch (Exception e)
+            {
+                _logger.LogError($"Something went wrong inside RemoveMember: {e.Message}");
+                return StatusCode(500, "Something went wrong during removing the membership");
+            }
         }
 
         [Authorize]
@@ -277,26 +344,37 @@ namespace Mobile_Backend.Controllers
             var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
             var loggedInUser = _repository.User.GetUserByEmail(userMail);
 
-            var allPublicGroups = _repository.Group.GetPublicGroups().ToList();
+            try
+            {
+                var allPublicGroups = _repository.Group.GetPublicGroups().ToList();
+                var groupsOfUser = _repository.UserToGroup.GetGroupsForUser(loggedInUser).ToList();
+                var resultGroups = new List<Group>();
 
-            var groupsOfUser = _repository.UserToGroup.GetGroupsForUser(loggedInUser).ToList();
-            var resultGroups = new List<Group>();
+                foreach (var availableGroup in allPublicGroups)
+                {
+                    var isExisting = false;
 
-            foreach (var availableGroup in allPublicGroups) {
-                var isExisting = false;
-               
-                foreach (var currentUserGroup in groupsOfUser) {
-                    if (currentUserGroup.Id == availableGroup.Id) {
-                        isExisting = true;
-                        break;
+                    foreach (var currentUserGroup in groupsOfUser)
+                    {
+                        if (currentUserGroup.Id == availableGroup.Id)
+                        {
+                            isExisting = true;
+                            break;
+                        }
+                    }
+                    if (!isExisting)
+                    {
+                        resultGroups.Add(availableGroup);
                     }
                 }
-                if (!isExisting) {
-                    resultGroups.Add(availableGroup);
-                }
-            }
 
-            return Ok(resultGroups);
+                return Ok(resultGroups);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Something went wrong inside GetPublicGroups: {e.Message}");
+                return StatusCode(500, "Something went wrong during getting public groups");
+            }
         }
 
         [Authorize]
@@ -305,14 +383,22 @@ namespace Mobile_Backend.Controllers
             var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
             var loggedInUser = _repository.User.GetUserByEmail(userMail);
 
-            var adminGroups = _repository.Group.FindByCondition(gr => (gr.AdminUserId == loggedInUser.Id)).ToList();
-            _logger.LogInfo("Hier:" + adminGroups.Count);
+            try
+            {
+                var adminGroups = _repository.Group.FindByCondition(gr => (gr.AdminUserId == loggedInUser.Id)).ToList();
 
-            if (adminGroups.Count >= 1) {
-                return Ok(adminGroups);
+                if (adminGroups.Count >= 1)
+                {
+                    return Ok(adminGroups);
+                }
+
+                return NoContent();
             }
-
-            return NoContent();      
+            catch (Exception e)
+            {
+                _logger.LogError($"Something went wrong inside GetAdminGroups: {e.Message}");
+                return StatusCode(500, "Something went wrong during getting all admin groups");
+            }
         }
     }
 }

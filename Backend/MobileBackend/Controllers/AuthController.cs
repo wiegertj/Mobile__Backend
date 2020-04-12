@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using Contracts;
 using Entities.Extensions;
 using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using Mobile_Backend.Extensions;
 
 namespace Mobile_Backend.Controllers
@@ -29,39 +25,26 @@ namespace Mobile_Backend.Controllers
             _emailSender = emailSender;
         }
 
-        [HttpPost, Route("login")]
+       [HttpPost, Route("login")]
        public IActionResult Login([FromBody]User user)
         {
             if(user == null)
             {
-                return BadRequest("Invalid client request");
+                return BadRequest("Object sent was null");
             }
 
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid exercise object sent from client.");
-                return BadRequest("Invalid model object");
+                _logger.LogError("Invalid user: object was null");
+                return BadRequest("Invalid user: object was null");
             }
 
             bool valid = _repository.User.ValidateUser(user);
 
             if(valid)
             {
-                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
-                var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-
-                var tokenOptions = new JwtSecurityToken(
-                    issuer: "http://localhost:5000",
-                    audience: "http://localhost:5000",
-                    claims: new List<Claim>(),
-                    expires: DateTime.Now.AddMinutes(20),
-                    signingCredentials: signinCredentials
-                    );
-
-                tokenOptions.Payload["email"] = user.Email;
-
-                var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-                return Ok(new { Token = tokenString });
+                var tokenString = AuthControllerExtensions.GenerateToken(user.Email);              
+                return Ok(new { Token = tokenString, Leasetime = 10 });
             }
             else
             {
@@ -74,13 +57,13 @@ namespace Mobile_Backend.Controllers
         {
             if(User == null)
             {
-                return BadRequest("Invalid client request");
+                return BadRequest("Object sent was null");
             }
 
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid user object sent from client.");
-                return BadRequest("Invalid model object");
+                _logger.LogError("Invalid user: object was null");
+                return BadRequest("Invalid user: object was null");
             }
 
             if (user.Email != null)
@@ -91,7 +74,7 @@ namespace Mobile_Backend.Controllers
 
                 if (_repository.User.CheckIfExisting(user.Email))
                 {
-                    return BadRequest("User is already existing!");
+                    return BadRequest("User with this email is already existing!");
                 }
             }
 
@@ -125,13 +108,13 @@ namespace Mobile_Backend.Controllers
         public IActionResult ChangeUser([FromBody]User user) {
             if (user == null)
             {
-                return BadRequest("Invalid client request");
+                return BadRequest("Invalid user: object was null");
             }
 
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid user object sent from client.");
-                return BadRequest("Invalid model object");
+                _logger.LogError("Invalid user object sent from client");
+                return BadRequest("Invalid user object sent from client");
             }
 
             try {
@@ -198,8 +181,16 @@ namespace Mobile_Backend.Controllers
 
             try
             {
-                // Delete all memberships of user
-                var removeUserToGroup = _repository.UserToGroup.GetMembershipsForUser(dbUser);
+                //Delete all memberships of user in subgroups
+                var removeUserToSubgroup = _repository.UserToSubgroup.GetMembershipsForUser(dbUser).ToList();
+
+                foreach (var mem in removeUserToSubgroup)
+                {
+                    _repository.UserToSubgroup.DeleteMembership(mem);
+                }
+
+                // Delete all memberships of user in groups
+                var removeUserToGroup = _repository.UserToGroup.GetMembershipsForUser(dbUser).ToList();
 
                 foreach (var mem in removeUserToGroup)
                 {
@@ -208,8 +199,26 @@ namespace Mobile_Backend.Controllers
 
                 _repository.Save();
 
-                // Delete all groups of user
+                // Delete all groups/subgroups of user
                 var groupsFromUser = _repository.Group.FindByCondition(gr => gr.AdminUserId == dbUser.Id).ToList();
+                
+                foreach(var group in groupsFromUser)
+                {
+                    var subgroups = _repository.Subgroup.GetSubgroupsForGroup(group.Id).ToList();
+
+                    foreach(var subgroup in subgroups)
+                    {
+                        var memberships = _repository.UserToSubgroup.GetMembershipsForSubgroup(subgroup).ToList();
+
+                        foreach (var mem in memberships) {
+                            _repository.UserToSubgroup.DeleteMembership(mem);
+                            _repository.Save();
+                        }
+
+                        _repository.Subgroup.DeleteGroup(subgroup);
+                        _repository.Save();
+                    }
+                }
 
                 var membershipsInGroupsFromUser = new List<UserToGroup>();
 
@@ -246,13 +255,13 @@ namespace Mobile_Backend.Controllers
         public IActionResult ResetPassword([FromBody]User user) {
             if (user == null)
             {
-                return BadRequest("Invalid client request");
+                return BadRequest("Invalid user: object was null");
             }
 
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid user object sent from client.");
-                return BadRequest("Invalid model object");
+                _logger.LogError("Invalid user object sent from client");
+                return BadRequest("Invalid user object sent from client");
             }
 
             var dbUser = _repository.User.GetUserByEmail(user.Email);
@@ -291,6 +300,16 @@ namespace Mobile_Backend.Controllers
 
             return Ok(user);
 
+        }
+
+        [Authorize]
+        [HttpGet, Route("new_token")]
+        public IActionResult GetNewToken()
+        {
+            string token = Request.Headers["Authorization"];
+            string email = AuthControllerExtensions.JwtNameExtractor(token);
+
+            return Ok(new { Token = AuthControllerExtensions.GenerateToken(email), Leasetime=10 });
         }
     }
 }
