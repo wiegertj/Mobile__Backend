@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Contracts;
 using Entities.Extensions;
 using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Mobile_Backend.Extensions;
 using Mobile_Backend.Helper;
 
@@ -16,12 +20,14 @@ namespace Mobile_Backend.Controllers
         private ILoggerManager _logger;
         private IRepositoryWrapper _repository;
         private IEmailSender _emailSender;
+        private IConfiguration _config;
 
-        public DiscussionController(ILoggerManager logger, IRepositoryWrapper repository, IEmailSender emailSender)
+        public DiscussionController(ILoggerManager logger, IRepositoryWrapper repository, IEmailSender emailSender, IConfiguration config)
         {
             _logger = logger;
             _repository = repository;
             _emailSender = emailSender;
+            _config = config;
         }
 
         [Authorize]
@@ -159,6 +165,41 @@ namespace Mobile_Backend.Controllers
             {
                 _logger.LogError($"Something went wrong while GetNewSubgroupDiscussionEntryAsync: {e.Message}");
                 return StatusCode(500, $"Something went wrong while getting GetNewSubgroupDiscussionEntryAsync");
+            }
+        }
+
+        [Authorize]
+        [HttpPost, Route("upload")]
+        public async System.Threading.Tasks.Task<IActionResult> UploadFileAsync(List<IFormFile> files)
+        {
+            if (files == null)
+            {
+                _logger.LogError($"Invalid client request: object was null");
+                return BadRequest("Invalid client request: object was null");
+            }
+
+            if (files.Count > 1)
+            {
+                _logger.LogError($"Invalid client request: sent multiple files");
+                return BadRequest("Invalid client request: sent multiple files");
+            }
+            try
+            {
+                var file = files.First();
+                var fileName = Path.GetRandomFileName();
+                var filePath = Path.Combine(_config["StoredFilesPath"], fileName);
+
+                using (var stream = System.IO.File.Create(filePath))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                return Ok(new {fileName = fileName});
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Something went wrong while UploadFileAsync: {e.Message}");
+                return StatusCode(500, $"Something went wrong while getting UploadFileAsync");
             }
         }
     }
