@@ -8,6 +8,7 @@
         IUserToGroupRepository UserToGroup { get; }
         ISubgroupRepository Subgroup { get; }
         IUserToSubgroupRepository UserToSubgroup { get; }
+        IDiscussionEntryRepository DiscussionEntry { get; }
         void Save();
     }
 }

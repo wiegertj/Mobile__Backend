@@ -16,5 +16,6 @@ namespace Entities
         public DbSet<UserToGroup> UserToGroups { get; set; }
         public DbSet<Subgroup> Subgroups { get; set; }
         public DbSet<UserToSubgroup> UserToSubgroups { get; set; }
+        public DbSet<DiscussionEntry> DiscussionEntries { get; set; }
     }
 }
