@@ -4,11 +4,9 @@ using System.Collections.Generic;
 
 namespace Contracts
 {
-    public interface IDiscussionEntryRepository : IRepositoryBase<DiscussionEntry>
+    public interface IFileRepository : IRepositoryBase<File>
     {
-        void PostDiscussion(DiscussionEntry entry);
-        IEnumerable<DiscussionEntry> GetSubgroupDiscussionEntries(int id);
-        IEnumerable<DiscussionEntry> GetGroupDiscussionEntries(int id);
-        DiscussionEntry GetDiscussionEntryById(long id);
+        void PostFile(File file);
+        void UpdateFile(File file);
     }
 }

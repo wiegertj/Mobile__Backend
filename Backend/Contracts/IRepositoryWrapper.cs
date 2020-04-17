@@ -9,6 +9,7 @@
         ISubgroupRepository Subgroup { get; }
         IUserToSubgroupRepository UserToSubgroup { get; }
         IDiscussionEntryRepository DiscussionEntry { get; }
+        IFileRepository File { get; }
         void Save();
     }
 }
