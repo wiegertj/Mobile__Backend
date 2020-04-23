@@ -400,5 +400,39 @@ namespace Mobile_Backend.Controllers
                 return StatusCode(500, "Something went wrong during getting all admin groups");
             }
         }
+
+        [Authorize]
+        [HttpGet, Route("get_user_groups")]
+        public IActionResult GetAllGroupsForUser()
+        {
+            var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
+            var loggedInUser = _repository.User.GetUserByEmail(userMail);
+            
+            try
+            {
+                
+                var myGroups = _repository.UserToGroup.GetGroupsForUser(loggedInUser).ToList();
+                var mySubgroups = _repository.UserToSubgroup.GetSubgroupsForUser(loggedInUser).ToList();
+
+                foreach (var subgroup in mySubgroups)
+                {
+                    foreach(var group in myGroups)
+                    {
+                        if (subgroup.Main_group.Equals(group.Id))
+                        {
+                            group.Subgroups.Add(subgroup);
+                            break;
+                        }
+                    }
+                }
+
+                return Ok(myGroups);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Something went wrong inside GetAllGroupsForUser: {e.Message}");
+                return StatusCode(500, "Something went wrong during getting all groups for logged in user");
+            }
+        }
     }
 }

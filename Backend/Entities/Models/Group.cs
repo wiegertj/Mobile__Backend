@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entities.Models
@@ -12,5 +13,7 @@ namespace Entities.Models
         public string Description { get; set; }
         public long AdminUserId { get; set; }
         public string IsPublic { get; set; }
+        [NotMapped]
+        public List<Subgroup> Subgroups { get; set; }
     }
 }
