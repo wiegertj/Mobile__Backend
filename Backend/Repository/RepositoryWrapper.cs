@@ -13,6 +13,8 @@ namespace Repository
         private IUserToGroupRepository _userToGroupRepository;
         private ISubgroupRepository _subgroupRepository;
         private IUserToSubgroupRepository _userToSubgroupRepository;
+        private IDiscussionEntryRepository _discussionEntryRepository;
+        private IFileRepository _fileRepository;
 
         public RepositoryWrapper(RepositoryContext repositoryContext)
         {
@@ -91,6 +93,31 @@ namespace Repository
                 }
 
                 return _userToSubgroupRepository;
+            }
+        }
+
+        public IDiscussionEntryRepository DiscussionEntry
+        {
+            get
+            {
+                if (_discussionEntryRepository == null)
+                {
+                    _discussionEntryRepository = new DiscussionEntryRepository(_repoContext);
+                }
+
+                return _discussionEntryRepository;
+            }
+        }
+
+        public IFileRepository File {
+            get
+            {
+                if (_fileRepository == null)
+                {
+                    _fileRepository = new FileRepository(_repoContext);
+                }
+
+                return _fileRepository;
             }
         }
 
