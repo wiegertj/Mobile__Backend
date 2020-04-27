@@ -13,7 +13,7 @@ namespace Entities.Models
         public long? Subgroup { get; set; }
         public long? NormalGroup { get; set; }
 
-        public int? FileId { get; set; }
+        public long? FileId { get; set; }
         [ForeignKey("FileId")]
         public File File { get; set; }
     }
