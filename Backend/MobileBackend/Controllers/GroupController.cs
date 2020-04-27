@@ -39,6 +39,11 @@ namespace Mobile_Backend.Controllers
                 return BadRequest("Invalid user: model state not valid");
             }
 
+            if (!group.ValidateCreateGroup())
+            {
+                return BadRequest("Sent object was not valid!");
+            }
+
             try
             {
                 var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
@@ -138,6 +143,11 @@ namespace Mobile_Backend.Controllers
             {
                 _logger.LogError("Invalid group object sent from client.");
                 return BadRequest("Invalid group object sent from client.");
+            }
+
+            if (!group.ValidateChangeGroup())
+            {
+                return BadRequest("Sent object was not valid!");
             }
 
             try

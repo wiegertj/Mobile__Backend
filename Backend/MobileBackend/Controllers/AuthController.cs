@@ -62,8 +62,13 @@ namespace Mobile_Backend.Controllers
 
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Invalid user: object was null");
-                return BadRequest("Invalid user: object was null");
+                _logger.LogError("Invalid user: object state is not valid");
+                return BadRequest("Invalid user: object state is not valid");
+            }
+
+            if (!user.ValidateRegisterUser())
+            {
+                return BadRequest("Invalid user: Some properties were empty!");
             }
 
             if (user.Email != null)
@@ -117,6 +122,11 @@ namespace Mobile_Backend.Controllers
                 return BadRequest("Invalid user object sent from client");
             }
 
+            if (!user.ValidateChangeUser())
+            {
+                return BadRequest("Some required values were not filled!");
+            }
+
             try {
                 var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
                 var dbUser = _repository.User.GetUserByEmail(userMail);
@@ -146,6 +156,11 @@ namespace Mobile_Backend.Controllers
             if (dbUser == null)
             {
                 return BadRequest("Invalid client request, User was not found");
+            }
+
+            if ((user.Password == null) || user.Password.Equals(""))
+            {
+                return BadRequest("No password was sent!");
             }
 
             dbUser.Password = user.Password;

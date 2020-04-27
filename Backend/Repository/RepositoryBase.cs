@@ -37,6 +37,11 @@ namespace Repository
 
         public IQueryable<T> FindByCondition(System.Linq.Expressions.Expression<Func<T, bool>> expression)
         {
+            if(expression == null)
+            {
+                return null;
+            }
+
             return this.RepositoryContext.Set<T>().Where(expression).AsNoTracking();
         }
     }
