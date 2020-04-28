@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entities.Models
@@ -10,6 +11,7 @@ namespace Entities.Models
         public long Id { get; set; }
         public long? AnswerTo { get; set; }
         public string Text { get; set; }
+        public DateTime? TimeStamp { get; set; }
         public long? Subgroup { get; set; }
         public long? NormalGroup { get; set; }
 

@@ -50,6 +50,8 @@ namespace Mobile_Backend.Controllers
 
             try
             {
+                entry.TimeStamp = DateTime.Now;
+
                 _repository.DiscussionEntry.PostDiscussion(entry);
                 _repository.Save();
 
@@ -73,17 +75,17 @@ namespace Mobile_Backend.Controllers
 
         [Authorize]
         [HttpGet, Route("group")]
-        public IActionResult GetGroupDiscussionEntries([FromBody]int? groupId)
+        public IActionResult GetGroupDiscussionEntries([FromBody]DiscussionEntryRequest discussionEntryRequest)
         {
 
-            if (groupId == null)
+            if (discussionEntryRequest == null)
             {
                 _logger.LogError($"Invalid client request: object was null");
                 return BadRequest("Invalid client request: object was null");
             }
             try
             {
-                var entries = _repository.DiscussionEntry.GetGroupDiscussionEntries(groupId.Value).ToList();
+                var entries = _repository.DiscussionEntry.GetGroupDiscussionEntries(discussionEntryRequest.GroupId, discussionEntryRequest.Since).ToList();
 
                 return Ok(entries);
             }
@@ -96,17 +98,17 @@ namespace Mobile_Backend.Controllers
 
         [Authorize]
         [HttpGet, Route("sub_group")]
-        public IActionResult GetSubGroupDiscussionEntries([FromBody]int? groupId)
+        public IActionResult GetSubGroupDiscussionEntries([FromBody]DiscussionEntryRequest discussionEntryRequest)
         {
 
-            if (groupId == null)
+            if (discussionEntryRequest == null)
             {
                 _logger.LogError($"Invalid client request: object was null");
                 return BadRequest("Invalid client request: object was null");
             }
             try
             {
-                var entries = _repository.DiscussionEntry.GetSubgroupDiscussionEntries(groupId.Value).ToList();
+                var entries = _repository.DiscussionEntry.GetSubgroupDiscussionEntries(discussionEntryRequest.GroupId, discussionEntryRequest.Since).ToList();
 
                 return Ok(entries);
             }
