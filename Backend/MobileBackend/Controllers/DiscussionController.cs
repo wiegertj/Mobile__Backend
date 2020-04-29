@@ -51,6 +51,9 @@ namespace Mobile_Backend.Controllers
             try
             {
                 entry.TimeStamp = DateTime.Now;
+                var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
+                var dbUser = _repository.User.GetUserByEmail(userMail);
+                entry.UserId = dbUser.Id;
 
                 _repository.DiscussionEntry.PostDiscussion(entry);
                 _repository.Save();
