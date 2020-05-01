@@ -101,7 +101,7 @@ namespace Mobile_Backend.Controllers
                         since = lastFetch.TimeStamp;
                     }
                 }
-
+                 
                 var entries = _repository.DiscussionEntry.GetGroupDiscussionEntries(discussionEntryRequest.GroupId, since).ToList();
 
                 if (lastFetch == null)
