@@ -109,10 +109,11 @@ namespace Mobile_Backend.Controllers
                     lastFetch = new LastGroupFetch();
                     lastFetch.UserId = dbUser.Id;
                     lastFetch.GroupId = discussionEntryRequest.GroupId;
-
-                    _repository.LastGroupFetch.PostOrUpdate(lastFetch);
-                    _repository.Save();
                 }
+
+                lastFetch.TimeStamp = DateTime.Now;
+                _repository.LastGroupFetch.PostOrUpdate(lastFetch);
+                _repository.Save();
 
                 return Ok(entries);
             }
@@ -156,10 +157,11 @@ namespace Mobile_Backend.Controllers
                     lastFetch = new LastSubGroupFetch();
                     lastFetch.UserId = dbUser.Id;
                     lastFetch.SubGroupId = discussionEntryRequest.GroupId;
-
-                    _repository.LastSubGroupFetch.PostOrUpdate(lastFetch);
-                    _repository.Save();
                 }
+
+                lastFetch.TimeStamp = DateTime.Now;
+                _repository.LastSubGroupFetch.PostOrUpdate(lastFetch);
+                _repository.Save();
 
                 return Ok(entries);
             }
