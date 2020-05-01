@@ -20,6 +20,10 @@ namespace Mobile_Backend
         public Startup(IConfiguration configuration)
         {
             LogManager.LoadConfiguration("nlog.config");
+
+            Logger logger = LogManager.GetCurrentClassLogger();
+            logger.Info("test");
+
             Configuration = configuration;
         }
 
