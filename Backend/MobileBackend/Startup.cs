@@ -19,7 +19,6 @@ namespace Mobile_Backend
     {
         public Startup(IConfiguration configuration)
         {
-            LogManager.ThrowExceptions = true;
             LogManager.LoadConfiguration("nlog.config");
             Configuration = configuration;
         }
