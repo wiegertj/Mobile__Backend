@@ -19,7 +19,7 @@ namespace Mobile_Backend
     {
         public Startup(IConfiguration configuration)
         {
-            LogManager.LoadConfiguration(String.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
+            LogManager.LoadConfiguration("nlog.config");
             Configuration = configuration;
         }
 
