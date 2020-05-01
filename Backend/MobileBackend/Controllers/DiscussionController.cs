@@ -267,7 +267,7 @@ namespace Mobile_Backend.Controllers
 
         [Authorize]
         [HttpPatch, Route("file")]
-        public async System.Threading.Tasks.Task<IActionResult> UpdateFileAsync(File file)
+        public IActionResult UpdateFile(File file)
         {
             if (file == null)
             {
@@ -286,11 +286,20 @@ namespace Mobile_Backend.Controllers
             }
         }
         
-        [HttpGet("file/{id}")]
+        [HttpGet("{id}"), Route("file")]
         public async System.Threading.Tasks.Task<FileStreamResult> Download(string id)
         {
-            var stream = System.IO.File.OpenRead(_config["StoredFilesPath"] + '/' + id);
-            return new FileStreamResult(stream, "application/octet-stream");
+            try
+            {
+                var stream = System.IO.File.OpenRead(_config["StoredFilesPath"] + '/' + id);
+                return new FileStreamResult(stream, "application/octet-stream");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Something went wrong while fetching file: {e.Message}");
+
+                return null;
+            }
         }
     }
 }
