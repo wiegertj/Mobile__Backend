@@ -85,7 +85,7 @@ namespace Mobile_Backend.Controllers
             {
                 _logger.LogError($"Invalid client request: object was null");
                 return BadRequest("Invalid client request: object was null");
-            } 
+            }
             try
             {
                 var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
