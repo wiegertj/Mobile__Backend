@@ -286,9 +286,8 @@ namespace Mobile_Backend.Controllers
                 return StatusCode(500, $"Something went wrong while getting UploadFileAsync");
             }
         }
-        
-        [HttpGet("{id}")]
-        [Route("file")]
+
+        [HttpGet, Route("file/{id}")]
         public ActionResult Download(string id)
         {
             try
