@@ -287,6 +287,7 @@ namespace Mobile_Backend.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet, Route("file/{id}")]
         public ActionResult Download(string id)
         {
