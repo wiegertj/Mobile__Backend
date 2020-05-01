@@ -285,5 +285,12 @@ namespace Mobile_Backend.Controllers
                 return StatusCode(500, $"Something went wrong while getting UploadFileAsync");
             }
         }
+        
+        [HttpGet("file/{id}")]
+        public async System.Threading.Tasks.Task<FileStreamResult> Download(string id)
+        {
+            var stream = System.IO.File.OpenRead(_config["StoredFilesPath"] + '/' + id);
+            return new FileStreamResult(stream, "application/octet-stream");
+        }
     }
 }
