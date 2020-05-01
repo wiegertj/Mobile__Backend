@@ -18,7 +18,7 @@ namespace Mobile_Backend.Controllers
     [Route("api/discussion")]
     public class DiscussionController : ControllerBase
     {
-        private ILoggerManager _logger;
+        private ILoggerManager  _logger;
         private IRepositoryWrapper _repository;
         private IEmailSender _emailSender;
         private IConfiguration _config;
