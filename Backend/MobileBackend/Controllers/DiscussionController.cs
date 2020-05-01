@@ -287,7 +287,8 @@ namespace Mobile_Backend.Controllers
             }
         }
         
-        [HttpGet("{id}"), Route("file")]
+        [HttpGet("{id}")]
+        [Route("file")]
         public async System.Threading.Tasks.Task<FileStreamResult> Download(string id)
         {
             try
