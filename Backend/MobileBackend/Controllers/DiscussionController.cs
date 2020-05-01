@@ -19,14 +19,14 @@ namespace Mobile_Backend.Controllers
     [Route("api/discussion")]
     public class DiscussionController : ControllerBase
     {
-        private Logger  _logger;
+        private ILoggerManager _logger;
         private IRepositoryWrapper _repository;
         private IEmailSender _emailSender;
         private IConfiguration _config;
 
         public DiscussionController(ILoggerManager logger, IRepositoryWrapper repository, IEmailSender emailSender, IConfiguration config)
         {
-            _logger = LogManager.GetCurrentClassLogger();
+            _logger = logger;
             _repository = repository;
             _emailSender = emailSender;
             _config = config;
@@ -39,13 +39,13 @@ namespace Mobile_Backend.Controllers
 
             if (entry == null)
             {
-                _logger.Error("Invalid object: entry was null");
+                _logger.LogError("Invalid object: entry was null");
                 return BadRequest("Invalid client request");
             }
 
             if (!ModelState.IsValid)
             {
-                _logger.Error("Invalid DiscussionEntry object sent from client.");
+                _logger.LogError("Invalid DiscussionEntry object sent from client.");
                 return BadRequest("Invalid DiscussionEntry object sent from client.");
             }
 
@@ -72,7 +72,7 @@ namespace Mobile_Backend.Controllers
             }
             catch (Exception e)
             {
-                _logger.Error($"Something went wrong inside CreateDiscussionEntry: {e.Message}");
+                _logger.LogError($"Something went wrong inside CreateDiscussionEntry: {e.Message}");
                 return StatusCode(500, "Something went wrong during creating discussion entry");
             }
         }
@@ -84,7 +84,7 @@ namespace Mobile_Backend.Controllers
 
             if (discussionEntryRequest == null)
             {
-                _logger.Error($"Invalid client request: object was null");
+                _logger.LogError($"Invalid client request: object was null");
                 return BadRequest("Invalid client request: object was null");
             }
             try
@@ -120,7 +120,7 @@ namespace Mobile_Backend.Controllers
             }
             catch (Exception e)
             {
-                _logger.Error($"Something went wrong while GetGroupDiscussionEntries: {e.Message}");
+                _logger.LogError($"Something went wrong while GetGroupDiscussionEntries: {e.Message}");
                 return StatusCode(500, $"Something went wrong while getting GetGroupDiscussionEntries");
             }
         }
@@ -132,7 +132,7 @@ namespace Mobile_Backend.Controllers
 
             if (discussionEntryRequest == null)
             {
-                _logger.Error($"Invalid client request: object was null");
+                _logger.LogError($"Invalid client request: object was null");
                 return BadRequest("Invalid client request: object was null");
             }
             try
@@ -168,7 +168,7 @@ namespace Mobile_Backend.Controllers
             }
             catch (Exception e)
             {
-                _logger.Error($"Something went wrong while GetSubGroupDiscussionEntries: {e.Message}");
+                _logger.LogError($"Something went wrong while GetSubGroupDiscussionEntries: {e.Message}");
                 return StatusCode(500, $"Something went wrong while getting GetSubGroupDiscussionEntries");
             }
         }
@@ -180,7 +180,7 @@ namespace Mobile_Backend.Controllers
 
             if (groupId == null)
             {
-                _logger.Error($"Invalid client request: object was null");
+                _logger.LogError($"Invalid client request: object was null");
                 return BadRequest("Invalid client request: object was null");
             }
             try
@@ -194,7 +194,7 @@ namespace Mobile_Backend.Controllers
             }
             catch (Exception e)
             {
-                _logger.Error($"Something went wrong while GetNewGroupDiscussionEntryAsync: {e.Message}");
+                _logger.LogError($"Something went wrong while GetNewGroupDiscussionEntryAsync: {e.Message}");
                 return StatusCode(500, $"Something went wrong while getting GetNewGroupDiscussionEntryAsync");
             }
         }
@@ -206,7 +206,7 @@ namespace Mobile_Backend.Controllers
 
             if (groupId == null)
             {
-                _logger.Error($"Invalid client request: object was null");
+                _logger.LogError($"Invalid client request: object was null");
                 return BadRequest("Invalid client request: object was null");
             }
             try
@@ -220,7 +220,7 @@ namespace Mobile_Backend.Controllers
             }
             catch (Exception e)
             {
-                _logger.Error($"Something went wrong while GetNewSubgroupDiscussionEntryAsync: {e.Message}");
+                _logger.LogError($"Something went wrong while GetNewSubgroupDiscussionEntryAsync: {e.Message}");
                 return StatusCode(500, $"Something went wrong while getting GetNewSubgroupDiscussionEntryAsync");
             }
         }
@@ -231,13 +231,13 @@ namespace Mobile_Backend.Controllers
         {
             if (files == null)
             {
-                _logger.Error($"Invalid client request: object was null");
+                _logger.LogError($"Invalid client request: object was null");
                 return BadRequest("Invalid client request: object was null");
             }
 
             if (files.Count > 1)
             {
-                _logger.Error($"Invalid client request: sent multiple files");
+                _logger.LogError($"Invalid client request: sent multiple files");
                 return BadRequest("Invalid client request: sent multiple files");
             }
             try
@@ -261,7 +261,7 @@ namespace Mobile_Backend.Controllers
             }
             catch (Exception e)
             {
-                _logger.Error($"Something went wrong while UploadFileAsync: {e.Message}");
+                _logger.LogError($"Something went wrong while UploadFileAsync: {e.Message}");
                 return StatusCode(500, $"Something went wrong while getting UploadFileAsync");
             }
         }
@@ -272,7 +272,7 @@ namespace Mobile_Backend.Controllers
         {
             if (file == null)
             {
-                _logger.Error($"Invalid client request: object was null");
+                _logger.LogError($"Invalid client request: object was null");
                 return BadRequest("Invalid client request: object was null");
             }
             try
@@ -282,14 +282,14 @@ namespace Mobile_Backend.Controllers
             }
             catch (Exception e)
             {
-                _logger.Error($"Something went wrong while UploadFileAsync: {e.Message}");
+                _logger.LogError($"Something went wrong while UploadFileAsync: {e.Message}");
                 return StatusCode(500, $"Something went wrong while getting UploadFileAsync");
             }
         }
         
         [HttpGet("{id}")]
         [Route("file")]
-        public async System.Threading.Tasks.Task<FileStreamResult> Download(string id)
+        public ActionResult Download(string id)
         {
             try
             {
@@ -298,9 +298,9 @@ namespace Mobile_Backend.Controllers
             }
             catch (Exception e)
             {
-                _logger.Error($"Something went wrong while fetching file: {e.Message}");
+                _logger.LogError($"Something went wrong while fetching file: {e.Message}");
 
-                return null;
+                return NotFound();
             }
         }
     }
