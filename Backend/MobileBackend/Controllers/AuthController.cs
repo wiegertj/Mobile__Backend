@@ -30,6 +30,7 @@ namespace Mobile_Backend.Controllers
         {
             if(user == null)
             {
+                _logger.LogError("Invalid user: object was null");
                 return BadRequest("Object sent was null");
             }
 
