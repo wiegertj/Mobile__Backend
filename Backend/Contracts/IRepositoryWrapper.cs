@@ -10,6 +10,8 @@
         IUserToSubgroupRepository UserToSubgroup { get; }
         IDiscussionEntryRepository DiscussionEntry { get; }
         IFileRepository File { get; }
+        ILastGroupFetchEntryRepository LastGroupFetch { get; }
+        ILastSubGroupFetchEntryRepository LastSubGroupFetch { get; }
         void Save();
     }
 }
