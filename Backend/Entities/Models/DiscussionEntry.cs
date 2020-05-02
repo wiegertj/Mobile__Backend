@@ -10,6 +10,7 @@ namespace Entities.Models
         [Key]
         public long Id { get; set; }
         public long? AnswerTo { get; set; }
+        public string Topic { get; set; }
         public string Text { get; set; }
         public DateTime? TimeStamp { get; set; }
         public long? Subgroup { get; set; }
