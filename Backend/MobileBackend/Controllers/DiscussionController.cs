@@ -104,6 +104,7 @@ namespace Mobile_Backend.Controllers
                 }
                 
                 var entries = _repository.DiscussionEntry.GetGroupDiscussionEntries(discussionEntryRequest.GroupId, since).ToList();
+                MakeParseable(entries);
 
                 if (lastFetch == null)
                 {
@@ -301,6 +302,18 @@ namespace Mobile_Backend.Controllers
                 _logger.LogError($"Something went wrong while fetching file: {e.Message}");
 
                 return NotFound();
+            }
+        }
+
+        private void MakeParseable(IEnumerable<DiscussionEntry> discussionEntries)
+        {
+            foreach(DiscussionEntry entry in discussionEntries)
+            {
+                entry.ParentDiscussionEntry = null;
+                if (entry.Answers != null)
+                {
+                    MakeParseable(entry.Answers);
+                }
             }
         }
     }
