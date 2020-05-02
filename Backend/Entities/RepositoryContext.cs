@@ -20,5 +20,13 @@ namespace Entities
         public DbSet<File> Files { get; set; }
         public DbSet<LastGroupFetch> LastGroupFetches { get; set; }
         public DbSet<LastSubGroupFetch> LastSubGroupFetches { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<DiscussionEntry>()
+                    .HasMany(e => e.Answers)
+                    .WithOne()
+                    .HasForeignKey(e => e.AnswerTo);
+        }
     }
 }
