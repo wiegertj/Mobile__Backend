@@ -20,18 +20,18 @@ namespace Repository
         {
             if (!since.HasValue)
             {
-                return FindByCondition(uts => uts.NormalGroup.Equals(id)).OrderBy(uts => uts.TimeStamp);
+                return FindByCondition(uts => uts.NormalGroup.Equals(id)).OrderBy(uts => uts.TimeStamp).ToList();
             }
-            return FindByCondition(uts => uts.NormalGroup.Equals(id) && uts.TimeStamp >= since.Value).OrderBy(uts => uts.TimeStamp);
+            return FindByCondition(uts => uts.NormalGroup.Equals(id) && uts.TimeStamp >= since.Value).OrderBy(uts => uts.TimeStamp).ToList();
         }
 
         public IEnumerable<DiscussionEntry> GetSubgroupDiscussionEntries(int id, DateTime? since)
         {
             if (!since.HasValue)
             {
-                return FindByCondition(uts => uts.Subgroup.Equals(id)).OrderBy(uts => uts.TimeStamp);
+                return FindByCondition(uts => uts.Subgroup.Equals(id)).OrderBy(uts => uts.TimeStamp).ToList();
             }
-            return FindByCondition(uts => uts.Subgroup.Equals(id) && uts.TimeStamp >= since.Value).OrderBy(uts => uts.TimeStamp);
+            return FindByCondition(uts => uts.Subgroup.Equals(id) && uts.TimeStamp >= since.Value).OrderBy(uts => uts.TimeStamp).ToList();
         }
 
         public void PostDiscussion(DiscussionEntry entry)
