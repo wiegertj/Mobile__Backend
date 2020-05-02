@@ -309,7 +309,8 @@ namespace Mobile_Backend.Controllers
         {
             foreach(DiscussionEntry entry in discussionEntries)
             {
-                entry.ParentDiscussionEntry = null;
+                _logger.LogInfo($"answers {entry.Answers.Count} {entry.Answers.ToString()}");
+                //entry.ParentDiscussionEntry = null;
                 if (entry.Answers != null)
                 {
                     MakeParseable(entry.Answers);

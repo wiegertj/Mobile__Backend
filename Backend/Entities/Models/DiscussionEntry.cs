@@ -24,7 +24,8 @@ namespace Entities.Models
         public long? UserId { get; set; }
 
         public long? AnswerTo { get; set; }
-        public DiscussionEntry ParentDiscussionEntry { get; set; }
+        //public DiscussionEntry ParentDiscussionEntry { get; set; }
+        [ForeignKey("StandardRefId")]
         public ICollection<DiscussionEntry> Answers { get; set; }
 
         public long? FileId { get; set; }
