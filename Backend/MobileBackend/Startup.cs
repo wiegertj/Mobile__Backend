@@ -21,9 +21,6 @@ namespace Mobile_Backend
         {
             LogManager.LoadConfiguration("nlog.config");
 
-            Logger logger = LogManager.GetCurrentClassLogger();
-            logger.Info("test");
-
             Configuration = configuration;
         }
 
