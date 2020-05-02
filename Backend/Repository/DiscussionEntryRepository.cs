@@ -20,7 +20,7 @@ namespace Repository
         {
             if (!since.HasValue)
             {
-                return FindByCondition(uts => uts.NormalGroup.Equals(id)).ToList();
+                return FindByCondition(uts => uts.NormalGroup.Equals(id)).OrderBy(uts => uts.TimeStamp).ToList();
             }
             return FindByCondition(uts => uts.NormalGroup.Equals(id) && uts.TimeStamp >= since.Value).OrderBy(uts => uts.TimeStamp).ToList();
         }
