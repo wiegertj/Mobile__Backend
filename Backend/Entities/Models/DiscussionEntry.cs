@@ -8,11 +8,6 @@ namespace Entities.Models
     [Table("Discussion_Entry")]
     public class DiscussionEntry : IEntity
     {
-        public DiscussionEntry()
-        {
-            Answers = new HashSet<DiscussionEntry>();
-        }
-
         [Key]
         public long Id { get; set; }
         public string Topic { get; set; }
@@ -24,7 +19,6 @@ namespace Entities.Models
         public long? UserId { get; set; }
 
         public long? AnswerTo { get; set; }
-        public ICollection<DiscussionEntry> Answers { get; set; }
 
         public long? FileId { get; set; }
         [ForeignKey("FileId")]
