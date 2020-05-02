@@ -7,8 +7,8 @@ namespace Contracts
     public interface IDiscussionEntryRepository : IRepositoryBase<DiscussionEntry>
     {
         void PostDiscussion(DiscussionEntry entry);
-        IEnumerable<DiscussionEntry> GetSubgroupDiscussionEntries(int id, DateTime? since);
-        IEnumerable<DiscussionEntry> GetGroupDiscussionEntries(int id, DateTime? since);
+        IEnumerable<DiscussionEntry> GetSubgroupDiscussionEntries(long id, DateTime? since);
+        IEnumerable<DiscussionEntry> GetGroupDiscussionEntries(long id, DateTime? since);
         DiscussionEntry GetDiscussionEntryById(long id);
     }
 }

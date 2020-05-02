@@ -16,7 +16,7 @@ namespace Repository
             return FindByCondition(uts => uts.Id.Equals(id)).First();
         }
 
-        public IEnumerable<DiscussionEntry> GetGroupDiscussionEntries(int id, DateTime? since)
+        public IEnumerable<DiscussionEntry> GetGroupDiscussionEntries(long id, DateTime? since)
         {
             if (!since.HasValue)
             {
@@ -25,7 +25,7 @@ namespace Repository
             return FindByCondition(uts => uts.NormalGroup.Equals(id) && uts.TimeStamp >= since.Value).OrderBy(uts => uts.TimeStamp).ToList();
         }
 
-        public IEnumerable<DiscussionEntry> GetSubgroupDiscussionEntries(int id, DateTime? since)
+        public IEnumerable<DiscussionEntry> GetSubgroupDiscussionEntries(long id, DateTime? since)
         {
             if (!since.HasValue)
             {
