@@ -102,10 +102,8 @@ namespace Mobile_Backend.Controllers
                         since = lastFetch.TimeStamp;
                     }
                 }
-
-                _logger.LogInfo($"fetching {discussionEntryRequest.GroupId} {since.HasValue}");
+                
                 var entries = _repository.DiscussionEntry.GetGroupDiscussionEntries(discussionEntryRequest.GroupId, since).ToList();
-                _logger.LogInfo($"fetched {entries.Count} {entries.ToString()}");
 
                 if (lastFetch == null)
                 {
