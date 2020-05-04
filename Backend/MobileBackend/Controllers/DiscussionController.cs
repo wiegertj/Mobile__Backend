@@ -78,7 +78,7 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpGet, Route("group")]
+        [HttpPost, Route("group")]
         public IActionResult GetGroupDiscussionEntries([FromBody]DiscussionEntryRequest discussionEntryRequest)
         {
 
@@ -126,7 +126,7 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpGet, Route("sub_group")]
+        [HttpPost, Route("sub_group")]
         public IActionResult GetSubGroupDiscussionEntries([FromBody]DiscussionEntryRequest discussionEntryRequest)
         {
 
@@ -174,7 +174,7 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpGet, Route("new/group")]
+        [HttpPost, Route("new/group")]
         public async System.Threading.Tasks.Task<IActionResult> GetNewGroupDiscussionEntryAsync([FromBody]int? groupId)
         {
 
@@ -200,7 +200,7 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpGet, Route("new/sub_group")]
+        [HttpPost, Route("new/sub_group")]
         public async System.Threading.Tasks.Task<IActionResult> GetNewSubgroupDiscussionEntryAsync([FromBody]int? groupId)
         {
 
@@ -288,7 +288,7 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpGet, Route("file/{id}")]
+        [HttpPost, Route("get_file/{id}")]
         public ActionResult Download(string id)
         {
             try
