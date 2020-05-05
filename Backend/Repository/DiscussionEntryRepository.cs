@@ -11,27 +11,40 @@ namespace Repository
     {
         public DiscussionEntryRepository(RepositoryContext context) : base(context) { }
 
-        public DiscussionEntry GetDiscussionEntryById(long id)
+        public DiscussionEntryReturnType GetDiscussionEntryById(long id)
         {
-            return FindByCondition(uts => uts.Id.Equals(id)).First();
+            return GetUserJoined(uts => uts.Id.Equals(id)).First();
         }
 
-        public IEnumerable<DiscussionEntry> GetGroupDiscussionEntries(long id, DateTime? since)
+        public IEnumerable<DiscussionEntryReturnType> GetGroupDiscussionEntries(long id, DateTime? since)
         {
             if (!since.HasValue)
             {
-                return FindByCondition(uts => uts.NormalGroup.Equals(id)).OrderBy(uts => uts.TimeStamp).ToList();
+                return GetUserJoined(uts => uts.NormalGroup.Equals(id));
             }
-            return FindByCondition(uts => uts.NormalGroup.Equals(id) && uts.TimeStamp >= since.Value).OrderBy(uts => uts.TimeStamp).ToList();
+            return GetUserJoined(uts => uts.NormalGroup.Equals(id) && uts.TimeStamp >= since.Value);
         }
 
-        public IEnumerable<DiscussionEntry> GetSubgroupDiscussionEntries(long id, DateTime? since)
+        public IEnumerable<DiscussionEntryReturnType> GetSubgroupDiscussionEntries(long id, DateTime? since)
         {
             if (!since.HasValue)
             {
-                return FindByCondition(uts => uts.Subgroup.Equals(id)).OrderBy(uts => uts.TimeStamp).ToList();
+                return GetUserJoined(uts => uts.Subgroup.Equals(id));
             }
-            return FindByCondition(uts => uts.Subgroup.Equals(id) && uts.TimeStamp >= since.Value).OrderBy(uts => uts.TimeStamp).ToList();
+            return GetUserJoined(uts => uts.Subgroup.Equals(id) && uts.TimeStamp >= since.Value);
+        }
+
+        private IList<DiscussionEntryReturnType> GetUserJoined(System.Linq.Expressions.Expression<Func<DiscussionEntry, bool>> expression)
+        {
+            return RepositoryContext.Set<DiscussionEntry>().Where(expression).Join(RepositoryContext.Users, 
+                discussionEntry => discussionEntry.UserId,
+                user => user.Id,
+                (discussionEntry, user) => new DiscussionEntryReturnType()
+                    {
+                        discussionEntry = discussionEntry,
+                        UserName = user.UserName
+                    }
+                ).OrderBy(uts => uts.discussionEntry.TimeStamp).ToList();
         }
 
         public void PostDiscussion(DiscussionEntry entry)
