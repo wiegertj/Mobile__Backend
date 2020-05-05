@@ -300,7 +300,7 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpGet, Route("members")]
+        [HttpPost, Route("members")]
         public IActionResult GetMembersSubgroup([FromBody]Subgroup subgroup)
         {
 
@@ -325,7 +325,7 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpGet, Route("all_subgroups")]
+        [HttpPost, Route("all_subgroups")]
         public IActionResult GetAllSubgroups([FromBody]Group group)
         {
             if (group == null)

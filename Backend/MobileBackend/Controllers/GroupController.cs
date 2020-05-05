@@ -176,7 +176,7 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpGet, Route("members")]
+        [HttpPost, Route("members")]
         public IActionResult GetMembers([FromBody] Group group)
         {
             group = _repository.Group.GetGroupById(group.Id);
