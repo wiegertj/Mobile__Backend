@@ -7,6 +7,6 @@ namespace Entities.Models
     public class DiscussionEntryRequest
     {
         public long GroupId { get; set; }
-        public bool SinceLastFetch { get; set; }
+        public DateTime? Since { get; set; }
     }
 }

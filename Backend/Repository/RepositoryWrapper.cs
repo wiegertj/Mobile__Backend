@@ -15,8 +15,6 @@ namespace Repository
         private IUserToSubgroupRepository _userToSubgroupRepository;
         private IDiscussionEntryRepository _discussionEntryRepository;
         private IFileRepository _fileRepository;
-        private ILastGroupFetchEntryRepository _lastGroupFetchEntryRepository;
-        private ILastSubGroupFetchEntryRepository _lastSubGroupFetchEntryRepository;
 
         public RepositoryWrapper(RepositoryContext repositoryContext)
         {
@@ -122,33 +120,7 @@ namespace Repository
                 return _fileRepository;
             }
         }
-
-        public ILastGroupFetchEntryRepository LastGroupFetch
-        {
-            get
-            {
-                if (_lastGroupFetchEntryRepository == null)
-                {
-                    _lastGroupFetchEntryRepository = new LastGroupFetchEntryRepository(_repoContext);
-                }
-
-                return _lastGroupFetchEntryRepository;
-            }
-        }
-
-        public ILastSubGroupFetchEntryRepository LastSubGroupFetch
-        {
-            get
-            {
-                if (_lastSubGroupFetchEntryRepository == null)
-                {
-                    _lastSubGroupFetchEntryRepository = new LastSubGroupFetchEntryRepository(_repoContext);
-                }
-
-                return _lastSubGroupFetchEntryRepository;
-            }
-        }
-
+        
         public void Save()
         {
             _repoContext.SaveChanges();

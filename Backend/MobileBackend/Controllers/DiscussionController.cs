@@ -89,33 +89,7 @@ namespace Mobile_Backend.Controllers
             }
             try
             {
-                var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
-                var dbUser = _repository.User.GetUserByEmail(userMail);
-
-                DateTime? since = null;
-                LastGroupFetch lastFetch = null;
-                if (discussionEntryRequest.SinceLastFetch)
-                {
-                    lastFetch = _repository.LastGroupFetch.Get(dbUser.Id, discussionEntryRequest.GroupId);
-                    if (lastFetch != null)
-                    {
-                        since = lastFetch.TimeStamp;
-                    }
-                }
-                
-                var entries = _repository.DiscussionEntry.GetGroupDiscussionEntries(discussionEntryRequest.GroupId, since).ToList();
-
-                if (lastFetch == null)
-                {
-                    lastFetch = new LastGroupFetch();
-                    lastFetch.UserId = dbUser.Id;
-                    lastFetch.GroupId = discussionEntryRequest.GroupId;
-                }
-
-                lastFetch.TimeStamp = DateTime.Now;
-                _repository.LastGroupFetch.PostOrUpdate(lastFetch);
-                _repository.Save();
-
+                var entries = _repository.DiscussionEntry.GetGroupDiscussionEntries(discussionEntryRequest.GroupId, discussionEntryRequest.Since).ToList();
                 return Ok(entries);
             }
             catch (Exception e)
@@ -137,33 +111,7 @@ namespace Mobile_Backend.Controllers
             }
             try
             {
-                var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
-                var dbUser = _repository.User.GetUserByEmail(userMail);
-
-                DateTime? since = null;
-                LastSubGroupFetch lastFetch = null;
-                if (discussionEntryRequest.SinceLastFetch)
-                {
-                    lastFetch = _repository.LastSubGroupFetch.Get(dbUser.Id, discussionEntryRequest.GroupId);
-                    if (lastFetch != null)
-                    {
-                        since = lastFetch.TimeStamp;
-                    }
-                }
-
-                var entries = _repository.DiscussionEntry.GetSubgroupDiscussionEntries(discussionEntryRequest.GroupId, since).ToList();
-
-                if (lastFetch == null)
-                {
-                    lastFetch = new LastSubGroupFetch();
-                    lastFetch.UserId = dbUser.Id;
-                    lastFetch.SubGroupId = discussionEntryRequest.GroupId;
-                }
-
-                lastFetch.TimeStamp = DateTime.Now;
-                _repository.LastSubGroupFetch.PostOrUpdate(lastFetch);
-                _repository.Save();
-
+                var entries = _repository.DiscussionEntry.GetSubgroupDiscussionEntries(discussionEntryRequest.GroupId, discussionEntryRequest.Since).ToList();
                 return Ok(entries);
             }
             catch (Exception e)
