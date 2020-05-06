@@ -429,18 +429,7 @@ namespace Mobile_Backend.Controllers
             {              
                 var myGroups = _repository.UserToGroup.GetGroupsForUser(loggedInUser).ToList();
 
-                foreach (var group in myGroups)
-                {
-                    if (group.AdminUserId.Equals(loggedInUser.Id))
-                    {
-                        group.IsAdmin = true;
-                    }
-                    else
-                    {
-                        group.IsAdmin = false;
-                    }
-                }
-
+            
                 var mySubgroups = _repository.UserToSubgroup.GetSubgroupsForUser(loggedInUser).ToList();
                 _logger.LogError(mySubgroups.Count.ToString());
 
@@ -453,6 +442,18 @@ namespace Mobile_Backend.Controllers
                             group.Subgroups.Add(subgroup);
                             break;
                         }
+                    }
+                }
+
+                foreach (var group in myGroups)
+                {
+                    if (group.AdminUserId.Equals(loggedInUser.Id))
+                    {
+                        group.IsAdmin = true;
+                    }
+                    else
+                    {
+                        group.IsAdmin = false;
                     }
                 }
 
