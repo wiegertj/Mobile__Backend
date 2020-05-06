@@ -48,6 +48,7 @@ namespace Repository
 
         public IEnumerable<Subgroup> GetSubgroupsForUser(User user)
         {
+            //changed UserId SubgrouId
             var userToSubgroupList = FindByCondition(uts => uts.UserId.Equals(user.Id)).ToList();
             var subgroupList = new List<Subgroup>();
 
