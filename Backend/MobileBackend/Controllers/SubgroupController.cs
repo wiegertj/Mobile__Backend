@@ -70,7 +70,7 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpDelete("{id}"), Route("delete")]
+        [HttpDelete, Route("delete/{id}")]
         public IActionResult DeleteSubgroup(long id)
         {
             var subgroup = _repository.Subgroup.GetSubgroupById(id);
@@ -245,7 +245,7 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpDelete("{id}"), Route("remove_member")]
+        [HttpDelete, Route("remove_member/{id}")]
         public IActionResult RemoveSubgroupMember(long id)
         {
             var userToSubgroup = new UserToSubgroup
@@ -304,7 +304,7 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpGet("{id}"), Route("members")]
+        [HttpGet, Route("members/{id}")]
         public IActionResult GetMembersSubgroup(long id)
         {
 
@@ -324,7 +324,7 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpGet("{id}"), Route("all_subgroups")]
+        [HttpGet, Route("all_subgroups/{id}")]
         public IActionResult GetAllSubgroups(long id)
         {
 

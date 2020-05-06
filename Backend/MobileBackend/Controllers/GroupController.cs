@@ -72,7 +72,7 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpDelete("{id}"), Route("delete")]
+        [HttpDelete, Route("delete/{id}")]
         public IActionResult DeleteGroup(long id)
         {
 
@@ -176,7 +176,7 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpGet("{id}"), Route("members")]
+        [HttpGet, Route("members/{id}")]
         public IActionResult GetMembers(long id)
         {
             var group = _repository.Group.GetGroupById(id);
@@ -267,7 +267,7 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpDelete("{userId}/{groupId}"), Route("remove_member")]
+        [HttpDelete, Route("remove_member/{userId}/{groupId}")]
         public IActionResult RemoveMember(long userId, long groupId) {
 
             var group = _repository.Group.GetGroupById(groupId);
