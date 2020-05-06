@@ -58,5 +58,17 @@ namespace Repository
         {
             return FindByCondition(utg => utg.GroupId == group.Id);
         }
+
+        public bool IsMember(long userId, long groupId)
+        {
+            var membership = FindByCondition(utg => (utg.UserId.Equals(userId) && utg.GroupId.Equals(groupId)));
+
+            if(membership == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

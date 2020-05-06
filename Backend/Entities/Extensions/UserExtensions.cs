@@ -70,6 +70,5 @@ namespace Entities.Extensions
 
             return true;
         }
-
     }
 }

@@ -57,6 +57,15 @@ namespace Mobile_Backend.Controllers
                     _repository.Subgroup.Create(subgroup);
                     _repository.Save();
 
+                    var adminMemberShip = new UserToSubgroup
+                    {
+                        UserId = dbUser.Id,
+                        SubgroupId = subgroup.Id
+                    };
+
+                    _repository.UserToSubgroup.AddMembership(adminMemberShip);
+                    _repository.Save();
+
                     return Ok(_repository.Subgroup.GetSubgroupById(subgroup.Id));
                 }
 
