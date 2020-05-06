@@ -250,6 +250,44 @@ namespace Mobile_Backend.Controllers
             }
         }
 
+        [Authorize]
+        [HttpGet, Route("/group/files/{groupId}")]
+        public ActionResult GetGroupFiles(int groupId)
+        {
+            try
+            {
+                if (!CheckGroupAuthorized(groupId)) { return Unauthorized(); }
+
+                var entries = _repository.File.GetGroupFiles(groupId);
+
+                return Ok(entries);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Something went wrong while GetGroupFiles: {e.Message}");
+                return StatusCode(500, $"Something went wrong while getting GetGroupFiles");
+            }
+        }
+
+        [Authorize]
+        [HttpGet, Route("/sub_group/files/{groupId}")]
+        public ActionResult GetSubGroupFiles(int groupId)
+        {
+            try
+            {
+                if (!CheckSubGroupAuthorized(groupId)) { return Unauthorized(); }
+
+                var entries = _repository.File.GetSubGroupFiles(groupId);
+
+                return Ok(entries);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Something went wrong while GetSubGroupFiles: {e.Message}");
+                return StatusCode(500, $"Something went wrong while getting GetSubGroupFiles");
+            }
+        }
+
         private bool CheckGroupAuthorized(long groupId)
         {
             var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);

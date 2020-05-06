@@ -8,5 +8,7 @@ namespace Contracts
     {
         void PostFile(File file);
         void UpdateFile(File file);
+        IEnumerable<File> GetGroupFiles(int groupId);
+        IEnumerable<File> GetSubGroupFiles(int groupId);
     }
 }
