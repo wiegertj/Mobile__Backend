@@ -422,6 +422,19 @@ namespace Mobile_Backend.Controllers
             {
                 
                 var myGroups = _repository.UserToGroup.GetGroupsForUser(loggedInUser).ToList();
+
+                foreach (var group in myGroups)
+                {
+                    if (group.AdminUserId.Equals(loggedInUser.Id))
+                    {
+                        group.IsAdmin = true;
+                    }
+                    else
+                    {
+                        group.IsAdmin = false;
+                    }
+                }
+
                 var mySubgroups = _repository.UserToSubgroup.GetSubgroupsForUser(loggedInUser).ToList();
 
                 foreach (var subgroup in mySubgroups)

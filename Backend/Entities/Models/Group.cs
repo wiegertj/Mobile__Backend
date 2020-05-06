@@ -15,5 +15,7 @@ namespace Entities.Models
         public string IsPublic { get; set; }
         [NotMapped]
         public List<Subgroup> Subgroups { get; set; }
+        [NotMapped]
+        public bool IsAdmin { get; set; }
     }
 }
