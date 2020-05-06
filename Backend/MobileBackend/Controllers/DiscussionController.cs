@@ -78,18 +78,14 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpPost, Route("group")]
-        public IActionResult GetGroupDiscussionEntries([FromBody]DiscussionEntryRequest discussionEntryRequest)
+        [HttpGet]
+        [Route("group/{groupId}")]
+        [Route("group/{groupId}/{since?}")]
+        public IActionResult GetGroupDiscussionEntries(int groupId, DateTime? since)
         {
-
-            if (discussionEntryRequest == null)
-            {
-                _logger.LogError($"Invalid client request: object was null");
-                return BadRequest("Invalid client request: object was null");
-            }
             try
             {
-                var entries = _repository.DiscussionEntry.GetGroupDiscussionEntries(discussionEntryRequest.GroupId, discussionEntryRequest.Since).ToList();
+                var entries = _repository.DiscussionEntry.GetGroupDiscussionEntries(groupId, since).ToList();
                 return Ok(entries);
             }
             catch (Exception e)
@@ -100,18 +96,14 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpPost, Route("sub_group")]
-        public IActionResult GetSubGroupDiscussionEntries([FromBody]DiscussionEntryRequest discussionEntryRequest)
+        [HttpGet]
+        [Route("sub_group/{groupId}")]
+        [Route("sub_group/{groupId}/{since?}")]
+        public IActionResult GetSubGroupDiscussionEntries(int groupId, DateTime? since)
         {
-
-            if (discussionEntryRequest == null)
-            {
-                _logger.LogError($"Invalid client request: object was null");
-                return BadRequest("Invalid client request: object was null");
-            }
             try
             {
-                var entries = _repository.DiscussionEntry.GetSubgroupDiscussionEntries(discussionEntryRequest.GroupId, discussionEntryRequest.Since).ToList();
+                var entries = _repository.DiscussionEntry.GetSubgroupDiscussionEntries(groupId, since).ToList();
                 return Ok(entries);
             }
             catch (Exception e)
@@ -122,18 +114,12 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpPost, Route("new/group")]
-        public async System.Threading.Tasks.Task<IActionResult> GetNewGroupDiscussionEntryAsync([FromBody]int? groupId)
+        [HttpGet, Route("new/group/{groupId}")]
+        public async System.Threading.Tasks.Task<IActionResult> GetNewGroupDiscussionEntryAsync(int groupId)
         {
-
-            if (groupId == null)
-            {
-                _logger.LogError($"Invalid client request: object was null");
-                return BadRequest("Invalid client request: object was null");
-            }
             try
             {
-                var lp = new SimpleLongPolling($"group{groupId.Value}");
+                var lp = new SimpleLongPolling($"group{groupId}");
                 var id = await lp.WaitAsync();
 
                 var entry = _repository.DiscussionEntry.GetDiscussionEntryById(id);
@@ -148,18 +134,12 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpPost, Route("new/sub_group")]
-        public async System.Threading.Tasks.Task<IActionResult> GetNewSubgroupDiscussionEntryAsync([FromBody]int? groupId)
+        [HttpGet, Route("new/sub_group/{groupId}")]
+        public async System.Threading.Tasks.Task<IActionResult> GetNewSubgroupDiscussionEntryAsync(int groupId)
         {
-
-            if (groupId == null)
-            {
-                _logger.LogError($"Invalid client request: object was null");
-                return BadRequest("Invalid client request: object was null");
-            }
             try
             {
-                var lp = new SimpleLongPolling($"subgroup{groupId.Value}");
+                var lp = new SimpleLongPolling($"subgroup{groupId}");
                 var id = await lp.WaitAsync();
 
                 var entry = _repository.DiscussionEntry.GetDiscussionEntryById(id);
@@ -236,7 +216,7 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpPost, Route("get_file/{id}")]
+        [HttpGet, Route("file/{id}")]
         public ActionResult Download(string id)
         {
             try
