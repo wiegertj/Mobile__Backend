@@ -426,8 +426,7 @@ namespace Mobile_Backend.Controllers
             var loggedInUser = _repository.User.GetUserByEmail(userMail);
             
             try
-            {
-                
+            {              
                 var myGroups = _repository.UserToGroup.GetGroupsForUser(loggedInUser).ToList();
 
                 foreach (var group in myGroups)
