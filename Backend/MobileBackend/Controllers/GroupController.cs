@@ -65,6 +65,7 @@ namespace Mobile_Backend.Controllers
 
                 return Ok(_repository.Group.GetGroupById(group.Id));
             }
+
             catch (Exception e) {
                 _logger.LogError($"Something went wrong inside CreateGroup: {e.Message}");
                 return BadRequest("Something went wrong while creating group, the group was not saved!");
@@ -73,7 +74,7 @@ namespace Mobile_Backend.Controllers
 
         [Authorize]
         [HttpDelete, Route("delete/{id}")]
-        public IActionResult DeleteGroup(long id)
+        public IActionResult DeleteGroup(long id) 
         {
 
             var group = _repository.Group.GetGroupById(id);
@@ -168,6 +169,7 @@ namespace Mobile_Backend.Controllers
                 _logger.LogError("Only admin can change group");
                 return BadRequest("Only admin can change group");
             }
+
             catch (Exception e)
             {
                 _logger.LogError($"Something went wrong inside UpdateGroup: {e.Message}");
@@ -201,7 +203,9 @@ namespace Mobile_Backend.Controllers
 
         [Authorize]
         [HttpPost, Route("add_member")]
-        public IActionResult AddMember([FromBody] UserToGroup userToGroupParam) {
+        public IActionResult AddMember([FromBody] UserToGroup userToGroupParam) 
+        {
+            
             var group = _repository.Group.GetGroupById(userToGroupParam.GroupId);
 
             if (group == null)
@@ -259,6 +263,7 @@ namespace Mobile_Backend.Controllers
                 _repository.Save();
                 return NoContent();
             }
+
             catch (Exception e)
             {
                 _logger.LogError($"Something went wrong inside AddMember: {e.Message}");
@@ -350,7 +355,8 @@ namespace Mobile_Backend.Controllers
 
         [Authorize]
         [HttpGet, Route("public")]
-        public IActionResult GetPublicGroups() {
+        public IActionResult GetPublicGroups() 
+        {
             var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
             var loggedInUser = _repository.User.GetUserByEmail(userMail);
 
@@ -389,7 +395,8 @@ namespace Mobile_Backend.Controllers
 
         [Authorize]
         [HttpGet, Route("admin_groups")]
-        public IActionResult GetAdminGroups() {
+        public IActionResult GetAdminGroups() 
+        {
             var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
             var loggedInUser = _repository.User.GetUserByEmail(userMail);
 
@@ -451,6 +458,7 @@ namespace Mobile_Backend.Controllers
 
                 return Ok(myGroups);
             }
+
             catch (Exception e)
             {
                 _logger.LogError($"Something went wrong inside GetAllGroupsForUser: {e.Message}");

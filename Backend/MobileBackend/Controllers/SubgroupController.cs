@@ -307,13 +307,16 @@ namespace Mobile_Backend.Controllers
         [HttpGet, Route("members/{id}")]
         public IActionResult GetMembersSubgroup(long id)
         {
+            var subgroup = _repository.Subgroup.GetSubgroupById(id);
+
+            if(subgroup == null)
+            {
+                return BadRequest("Subgroup with this id was not found!");
+            }
 
             try
             {
-
-                var subgroup = _repository.Subgroup.GetSubgroupById(id);
                 var listMembers = _repository.UserToSubgroup.GetMembersForSubgroup(subgroup).ToList();
-
                 return Ok(listMembers);
             }
             catch (Exception e)
@@ -341,6 +344,7 @@ namespace Mobile_Backend.Controllers
                 var allSubgroups = _repository.Subgroup.GetSubgroupsForGroup(group.Id);
                 return Ok(allSubgroups);
             }
+
             catch (Exception e)
             {
                 _logger.LogError($"Something went wrong inside GetAllSubgroups: {e.Message}");
