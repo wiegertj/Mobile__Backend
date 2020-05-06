@@ -36,7 +36,6 @@ namespace Mobile_Backend.Controllers
         [HttpPost]
         public IActionResult CreateDiscussionEntry([FromBody]DiscussionEntry entry)
         {
-
             if (entry == null)
             {
                 _logger.LogError("Invalid object: entry was null");
@@ -51,6 +50,16 @@ namespace Mobile_Backend.Controllers
 
             try
             {
+                if (entry.NormalGroup.HasValue && !CheckGroupAuthorized(entry.NormalGroup.Value))
+                {
+                    return Unauthorized();
+                }
+                else if (entry.Subgroup.HasValue && !CheckGroupAuthorized(entry.Subgroup.Value))
+                {
+                    return Unauthorized();
+                }
+
+
                 entry.TimeStamp = DateTime.Now;
                 var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
                 var dbUser = _repository.User.GetUserByEmail(userMail);
@@ -85,6 +94,8 @@ namespace Mobile_Backend.Controllers
         {
             try
             {
+                if (CheckGroupAuthorized(groupId)) { return Unauthorized(); }
+
                 var entries = _repository.DiscussionEntry.GetGroupDiscussionEntries(groupId, since).ToList();
                 return Ok(entries);
             }
@@ -103,6 +114,8 @@ namespace Mobile_Backend.Controllers
         {
             try
             {
+                if (CheckSubGroupAuthorized(groupId)) { return Unauthorized(); }
+
                 var entries = _repository.DiscussionEntry.GetSubgroupDiscussionEntries(groupId, since).ToList();
                 return Ok(entries);
             }
@@ -119,6 +132,8 @@ namespace Mobile_Backend.Controllers
         {
             try
             {
+                if (CheckGroupAuthorized(groupId)) { return Unauthorized(); }
+
                 var lp = new SimpleLongPolling($"group{groupId}");
                 var id = await lp.WaitAsync();
 
@@ -139,6 +154,8 @@ namespace Mobile_Backend.Controllers
         {
             try
             {
+                if (CheckSubGroupAuthorized(groupId)) { return Unauthorized(); }
+
                 var lp = new SimpleLongPolling($"subgroup{groupId}");
                 var id = await lp.WaitAsync();
 
@@ -182,11 +199,6 @@ namespace Mobile_Backend.Controllers
                 var fileName = Path.GetRandomFileName();
                 var filePath = Path.Combine(_config["StoredFilesPath"], fileName);
 
-                using (var stream = System.IO.File.Create(filePath))
-                {
-                    await file.CopyToAsync(stream);
-                }
-
                 var f = new Entities.Models.File
                 {
                     Path = fileName
@@ -194,13 +206,20 @@ namespace Mobile_Backend.Controllers
 
                 if (groupId.HasValue)
                 {
+                    if (!CheckGroupAuthorized(groupId.Value)) { return Unauthorized(); }
                     f.NormalGroup = groupId.Value;
                 }
                 else if (subGroupId.HasValue)
                 {
+                    if (!CheckSubGroupAuthorized(groupId.Value)) { return Unauthorized(); }
                     f.Subgroup = subGroupId.Value;
                 }
 
+                using (var stream = System.IO.File.Create(filePath))
+                {
+                    await file.CopyToAsync(stream);
+                }
+                
                 _repository.File.PostFile(f);
 
                 return Ok(f);
@@ -227,6 +246,22 @@ namespace Mobile_Backend.Controllers
 
                 return NotFound();
             }
+        }
+
+        private bool CheckGroupAuthorized(long groupId)
+        {
+            var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
+            var dbUser = _repository.User.GetUserByEmail(userMail);
+
+            return _repository.UserToGroup.IsMember(dbUser.Id, groupId);
+        }
+
+        private bool CheckSubGroupAuthorized(long groupId)
+        {
+            var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
+            var dbUser = _repository.User.GetUserByEmail(userMail);
+
+            return _repository.UserToSubgroup.IsMember(dbUser.Id, groupId);
         }
     }
 }

@@ -11,5 +11,6 @@ namespace Contracts
         IEnumerable<Subgroup> GetSubgroupsForUser(User user);
         IEnumerable<UserToSubgroup> GetMembershipsForSubgroup(Subgroup subgroup);
         IEnumerable<UserToSubgroup> GetMembershipsForUser(User user);
+        bool IsMember(long userId, long groupId);
     }
 }
