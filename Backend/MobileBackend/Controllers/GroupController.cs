@@ -439,6 +439,10 @@ namespace Mobile_Backend.Controllers
                     {
                         if (subgroup.Main_group.Equals(group.Id))
                         {
+                            if (group.Subgroups == null)
+                            {
+                                group.Subgroups = new List<Subgroup>();
+                            }
                             group.Subgroups.Add(subgroup);
                             break;
                         }
