@@ -69,7 +69,7 @@ namespace Mobile_Backend.Extensions
                 issuer: "http://localhost:5000",
                 audience: "http://localhost:5000",
                 claims: new List<Claim>(),
-                expires: DateTime.Now.AddMinutes(10),
+                expires: DateTime.Now.AddMinutes(30,
                 signingCredentials: signinCredentials
                 );
 

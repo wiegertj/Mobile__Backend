@@ -45,7 +45,7 @@ namespace Mobile_Backend.Controllers
             if(valid)
             {
                 var tokenString = AuthControllerExtensions.GenerateToken(user.Email);              
-                return Ok(new { Token = tokenString, Leasetime = 10 });
+                return Ok(new { Token = tokenString, Leasetime = 30 });
             }
             else
             {
@@ -325,7 +325,7 @@ namespace Mobile_Backend.Controllers
             string token = Request.Headers["Authorization"];
             string email = AuthControllerExtensions.JwtNameExtractor(token);
 
-            return Ok(new { Token = AuthControllerExtensions.GenerateToken(email), Leasetime=10 });
+            return Ok(new { Token = AuthControllerExtensions.GenerateToken(email), Leasetime = 30 });
         }
     }
 }
