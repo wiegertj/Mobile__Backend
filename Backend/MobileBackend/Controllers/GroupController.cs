@@ -451,7 +451,6 @@ namespace Mobile_Backend.Controllers
                         if (subgroup.Main_group.Equals(group.Id))
                         {
                             group.Subgroups.Add(subgroup);
-                            break;
                         }
                     }
                 }
