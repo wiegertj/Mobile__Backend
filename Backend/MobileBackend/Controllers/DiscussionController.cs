@@ -89,14 +89,15 @@ namespace Mobile_Backend.Controllers
         [Authorize]
         [HttpGet]
         [Route("group/{groupId}")]
-        [Route("group/{groupId}/{since?}")]
-        public IActionResult GetGroupDiscussionEntries(int groupId, DateTime? since)
+        [Route("group/{groupId}/{skip?}")]
+        [Route("group/{groupId}/{skip?}/{take?}")]
+        public IActionResult GetGroupDiscussionEntries(int groupId, int? skip, int? take)
         {
             try
             {
                 if (!CheckGroupAuthorized(groupId)) { return Unauthorized(); }
 
-                var entries = _repository.DiscussionEntry.GetGroupDiscussionEntries(groupId, since).ToList();
+                var entries = _repository.DiscussionEntry.GetGroupDiscussionEntries(groupId, skip, take).ToList();
                 return Ok(entries);
             }
             catch (Exception e)
@@ -109,14 +110,15 @@ namespace Mobile_Backend.Controllers
         [Authorize]
         [HttpGet]
         [Route("sub_group/{groupId}")]
-        [Route("sub_group/{groupId}/{since?}")]
-        public IActionResult GetSubGroupDiscussionEntries(int groupId, DateTime? since)
+        [Route("sub_group/{groupId}/{skip?}")]
+        [Route("sub_group/{groupId}/{skip?}/{take?}")]
+        public IActionResult GetSubGroupDiscussionEntries(int groupId, int? skip, int? take)
         {
             try
             {
                 if (!CheckSubGroupAuthorized(groupId)) { return Unauthorized(); }
 
-                var entries = _repository.DiscussionEntry.GetSubgroupDiscussionEntries(groupId, since).ToList();
+                var entries = _repository.DiscussionEntry.GetSubgroupDiscussionEntries(groupId, skip, take).ToList();
                 return Ok(entries);
             }
             catch (Exception e)
