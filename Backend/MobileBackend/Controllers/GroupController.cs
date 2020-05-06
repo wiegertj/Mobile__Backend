@@ -72,11 +72,11 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpDelete, Route("delete")]
-        public IActionResult DeleteGroup([FromBody]Group group)
+        [HttpDelete("{id}"), Route("delete")]
+        public IActionResult DeleteGroup(long id)
         {
 
-            group = _repository.Group.GetGroupById(group.Id);
+            var group = _repository.Group.GetGroupById(id);
 
             if (group == null)
             {
@@ -176,10 +176,10 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpPost, Route("members")]
-        public IActionResult GetMembers([FromBody] Group group)
+        [HttpGet("{id}"), Route("members")]
+        public IActionResult GetMembers(long id)
         {
-            group = _repository.Group.GetGroupById(group.Id);
+            var group = _repository.Group.GetGroupById(id);
 
             if (group == null)
             {
@@ -267,10 +267,10 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpDelete, Route("remove_member")]
-        public IActionResult RemoveMember([FromBody] UserToGroup userToGroup) {
+        [HttpDelete("{userId}/{groupId}"), Route("remove_member")]
+        public IActionResult RemoveMember(long userId, long groupId) {
 
-            var group = _repository.Group.GetGroupById(userToGroup.GroupId);
+            var group = _repository.Group.GetGroupById(groupId);
             var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
             var loggedInUser = _repository.User.GetUserByEmail(userMail);
 
@@ -280,7 +280,7 @@ namespace Mobile_Backend.Controllers
                 return BadRequest("Group with was not found!");
             }
 
-            var userToRemove = _repository.User.FindByCondition(us => us.Id == userToGroup.UserId).FirstOrDefault();
+            var userToRemove = _repository.User.FindByCondition(us => us.Id == userId).FirstOrDefault();
 
             if (userToRemove == null)
             {
@@ -300,7 +300,7 @@ namespace Mobile_Backend.Controllers
                 // Delete all subgroups if existing
                 if ((group.AdminUserId == loggedInUser.Id) || (loggedInUser.Id == userToRemove.Id))
                 {
-                    var listSubgroups = _repository.Subgroup.GetSubgroupsForGroup(userToGroup.GroupId).ToList();
+                    var listSubgroups = _repository.Subgroup.GetSubgroupsForGroup(groupId).ToList();
 
                     foreach (var sgr in listSubgroups)
                     {
@@ -320,7 +320,7 @@ namespace Mobile_Backend.Controllers
 
                     foreach (var mem in removeUserToGroup)
                     {
-                        if (mem.GroupId == userToGroup.GroupId)
+                        if (mem.GroupId == groupId)
                         {
                             _repository.UserToGroup.DeleteMembership(mem);
                             deleted = true;

@@ -70,11 +70,10 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpDelete, Route("delete")]
-        public IActionResult DeleteSubgroup([FromBody]Subgroup subgroup)
+        [HttpDelete("{id}"), Route("delete")]
+        public IActionResult DeleteSubgroup(long id)
         {
-
-            subgroup = _repository.Subgroup.GetSubgroupById(subgroup.Id);
+            var subgroup = _repository.Subgroup.GetSubgroupById(id);
 
             if (subgroup == null)
             {
@@ -185,7 +184,7 @@ namespace Mobile_Backend.Controllers
 
                 var subgroup = _repository.Subgroup.GetSubgroupById(userToSubgroup.SubgroupId);
 
-                if(subgroup == null)
+                if (subgroup == null)
                 {
                     _logger.LogError("The subgroup was not found!");
                     return BadRequest("The subgroup was not found!");
@@ -246,9 +245,14 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpDelete, Route("remove_member")]
-        public IActionResult RemoveSubgroupMember([FromBody]UserToSubgroup userToSubgroup)
+        [HttpDelete("{id}"), Route("remove_member")]
+        public IActionResult RemoveSubgroupMember(long id)
         {
+            var userToSubgroup = new UserToSubgroup
+            {
+                SubgroupId = id
+            };
+
             if (userToSubgroup == null)
             {
                 _logger.LogError($"Invalid client request: object was null");
@@ -300,19 +304,14 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpPost, Route("members")]
-        public IActionResult GetMembersSubgroup([FromBody]Subgroup subgroup)
+        [HttpGet("{id}"), Route("members")]
+        public IActionResult GetMembersSubgroup(long id)
         {
 
-            if (subgroup == null)
-            {
-                _logger.LogError($"Invalid client request: object was null");
-                return BadRequest("Invalid client request: object was null");
-            }
             try
             {
 
-                subgroup = _repository.Subgroup.GetSubgroupById(subgroup.Id);
+                var subgroup = _repository.Subgroup.GetSubgroupById(id);
                 var listMembers = _repository.UserToSubgroup.GetMembersForSubgroup(subgroup).ToList();
 
                 return Ok(listMembers);
@@ -325,16 +324,11 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpPost, Route("all_subgroups")]
-        public IActionResult GetAllSubgroups([FromBody]Group group)
+        [HttpGet("{id}"), Route("all_subgroups")]
+        public IActionResult GetAllSubgroups(long id)
         {
-            if (group == null)
-            {
-                _logger.LogError($"Invalid client request: object was null");
-                return BadRequest("Invalid client request: object was null");
-            }
 
-            group = _repository.Group.GetGroupById(group.Id);
+            var group = _repository.Group.GetGroupById(id);
 
             if (group == null)
             {
