@@ -154,8 +154,10 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpPost, Route("file")]
-        public async System.Threading.Tasks.Task<IActionResult> UploadFileAsync(List<IFormFile> files)
+        [HttpPost]
+        [Route("group/file/{groupId?}")]
+        [Route("sub_group/file/{subGroupId?}")]
+        public async System.Threading.Tasks.Task<IActionResult> UploadFileAsync(List<IFormFile> files, int? groupId, int? subGroupId)
         {
             if (files == null)
             {
@@ -167,6 +169,12 @@ namespace Mobile_Backend.Controllers
             {
                 _logger.LogError($"Invalid client request: sent multiple files");
                 return BadRequest("Invalid client request: sent multiple files");
+            }
+
+            if (!groupId.HasValue && !subGroupId.HasValue)
+            {
+                _logger.LogError($"No Id in URL");
+                return BadRequest("No Id in URL");
             }
             try
             {
@@ -183,30 +191,19 @@ namespace Mobile_Backend.Controllers
                 {
                     Path = fileName
                 };
+
+                if (groupId.HasValue)
+                {
+                    f.NormalGroup = groupId.Value;
+                }
+                else if (subGroupId.HasValue)
+                {
+                    f.Subgroup = subGroupId.Value;
+                }
+
                 _repository.File.PostFile(f);
 
                 return Ok(f);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Something went wrong while UploadFileAsync: {e.Message}");
-                return StatusCode(500, $"Something went wrong while getting UploadFileAsync");
-            }
-        }
-
-        [Authorize]
-        [HttpPatch, Route("file")]
-        public IActionResult UpdateFile(File file)
-        {
-            if (file == null)
-            {
-                _logger.LogError($"Invalid client request: object was null");
-                return BadRequest("Invalid client request: object was null");
-            }
-            try
-            {
-                _repository.File.UpdateFile(file);
-                return Ok(file);
             }
             catch (Exception e)
             {
