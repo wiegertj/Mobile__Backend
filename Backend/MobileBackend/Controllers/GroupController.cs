@@ -442,6 +442,7 @@ namespace Mobile_Backend.Controllers
                 }
 
                 var mySubgroups = _repository.UserToSubgroup.GetSubgroupsForUser(loggedInUser).ToList();
+                _logger.LogError(mySubgroups.Count.ToString());
 
                 foreach (var subgroup in mySubgroups)
                 {
