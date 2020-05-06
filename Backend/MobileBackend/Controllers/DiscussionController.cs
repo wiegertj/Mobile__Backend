@@ -94,7 +94,7 @@ namespace Mobile_Backend.Controllers
         {
             try
             {
-                if (CheckGroupAuthorized(groupId)) { return Unauthorized(); }
+                if (!CheckGroupAuthorized(groupId)) { return Unauthorized(); }
 
                 var entries = _repository.DiscussionEntry.GetGroupDiscussionEntries(groupId, since).ToList();
                 return Ok(entries);
@@ -114,7 +114,7 @@ namespace Mobile_Backend.Controllers
         {
             try
             {
-                if (CheckSubGroupAuthorized(groupId)) { return Unauthorized(); }
+                if (!CheckSubGroupAuthorized(groupId)) { return Unauthorized(); }
 
                 var entries = _repository.DiscussionEntry.GetSubgroupDiscussionEntries(groupId, since).ToList();
                 return Ok(entries);
@@ -132,7 +132,7 @@ namespace Mobile_Backend.Controllers
         {
             try
             {
-                if (CheckGroupAuthorized(groupId)) { return Unauthorized(); }
+                if (!CheckGroupAuthorized(groupId)) { return Unauthorized(); }
 
                 var lp = new SimpleLongPolling($"group{groupId}");
                 var id = await lp.WaitAsync();
@@ -154,7 +154,7 @@ namespace Mobile_Backend.Controllers
         {
             try
             {
-                if (CheckSubGroupAuthorized(groupId)) { return Unauthorized(); }
+                if (!CheckSubGroupAuthorized(groupId)) { return Unauthorized(); }
 
                 var lp = new SimpleLongPolling($"subgroup{groupId}");
                 var id = await lp.WaitAsync();
