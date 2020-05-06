@@ -29,17 +29,17 @@ namespace Repository
 
         private IList<DiscussionEntryReturnType> GetUserJoined(Expression<Func<DiscussionEntry, bool>> expression, Func<IQueryable<DiscussionEntryReturnType>, IQueryable<DiscussionEntryReturnType>> fun=null)
         {
-            var v = RepositoryContext.Set<DiscussionEntry>().Where(expression).Join(RepositoryContext.Users,
+            IQueryable<DiscussionEntryReturnType> v = RepositoryContext.Set<DiscussionEntry>().Where(expression).Join(RepositoryContext.Users,
                 discussionEntry => discussionEntry.UserId,
                 user => user.Id,
                 (discussionEntry, user) => new DiscussionEntryReturnType()
                 {
                     discussionEntry = discussionEntry,
                     UserName = user.UserName
-                });
+                }).OrderBy(uts => uts.discussionEntry.TimeStamp);
             if (fun != null)
                 v = fun(v);
-            return v.OrderBy(uts => uts.discussionEntry.TimeStamp).ToList();
+            return v.ToList();
         }
 
         private IQueryable<DiscussionEntryReturnType> SkipAndTake(IQueryable<DiscussionEntryReturnType> query, int? skip, int? take)
