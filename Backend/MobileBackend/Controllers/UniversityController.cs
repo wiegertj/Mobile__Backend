@@ -1,5 +1,7 @@
 ﻿using Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Mobile_Backend.Extensions;
 using System;
 
 namespace Mobile_Backend.Controllers
@@ -31,6 +33,18 @@ namespace Mobile_Backend.Controllers
                 _logger.LogError($"Something went wrong inside GetUniversities: {e.Message}");
                 return StatusCode(500, "Something went wrong while getting the universities");
             }
+        }
+
+        [Authorize]
+        [HttpGet, Route("get_all_students")]
+        public IActionResult GetAllStudents()
+        {
+            var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
+            var dbUser = _repository.User.GetUserByEmail(userMail);
+
+            var allStudents = _repository.User.FindByCondition(u => u.University_Id.Equals(dbUser.University_Id));
+
+            return Ok(allStudents);
         }
     }
 }
