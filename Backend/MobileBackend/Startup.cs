@@ -43,6 +43,7 @@ namespace Mobile_Backend
                 options.Filters.Add(new CorsAuthorizationFilterFactory("CorsPolicy"));
             });
             services.AddSingleton<IEmailSender, EmailSender>();
+            services.AddSingleton<IPushSender, PushSender>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
