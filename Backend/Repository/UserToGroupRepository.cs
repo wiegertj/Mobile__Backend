@@ -61,14 +61,24 @@ namespace Repository
 
         public bool IsMember(long userId, long groupId)
         {
-            var membership = FindByCondition(utg => ((utg.UserId == userId) && (utg.GroupId == groupId))).FirstOrDefault();
+            var user = base.RepositoryContext.Users.Find(userId);
 
-            if(membership == null)
+            if (user == null)
             {
                 return false;
             }
 
-            return true;
+            var groupsUser = this.GetGroupsForUser(user);
+
+            foreach (var group in groupsUser)
+            {
+                if (group.Id.Equals(groupId))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
