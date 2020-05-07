@@ -62,7 +62,7 @@ namespace Repository
 
         public bool IsMember(long userId, long groupId)
         {
-            var membership = FindByCondition(utg => (utg.UserId.Equals(userId) && utg.SubgroupId.Equals(groupId)));
+            var membership = FindByCondition(utg => ((utg.UserId == userId) && (utg.SubgroupId == groupId)));
 
             if (membership == null)
             {
