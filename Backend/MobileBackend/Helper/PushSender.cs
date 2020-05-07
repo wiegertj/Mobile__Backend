@@ -45,7 +45,7 @@ namespace Mobile_Backend.Helper
                                                     + "\"app_id\": \"71f3050c-2a04-4d17-81ec-33f76361bf19\","
                                                     + $"\"headings\":{{\"de\":\"{title}\"}},"
                                                     + $"\"contents\":{{\"de\": \"{text}\"}},"
-                                                    + $"\"data\":{{{data}}},"
+                                                    + $"\"data\":{data},"
                                                     + "\"included_segments\": [\"All\"],"
                                                     + $"\"filters\": [{filters}]}}");
 
