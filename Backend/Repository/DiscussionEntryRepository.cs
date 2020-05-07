@@ -34,9 +34,17 @@ namespace Repository
                 user => user.Id,
                 (discussionEntry, user) => new DiscussionEntryReturnType()
                 {
-                    discussionEntry = discussionEntry,
+                    Id = discussionEntry.Id,
+                    Topic = discussionEntry.Topic,
+                    Text = discussionEntry.Text,
+                    TimeStamp = discussionEntry.TimeStamp,
+                    Subgroup = discussionEntry.Subgroup,
+                    NormalGroup = discussionEntry.NormalGroup,
+                    UserId = discussionEntry.UserId,
+                    AnswerTo = discussionEntry.AnswerTo,
+                    File = discussionEntry.File,
                     UserName = user.UserName
-                }).OrderBy(uts => uts.discussionEntry.TimeStamp);
+                }).OrderBy(uts => uts.TimeStamp);
             if (fun != null)
                 v = fun(v);
             return v.ToList();
