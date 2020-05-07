@@ -46,7 +46,6 @@ namespace Mobile_Backend.Helper
                                                     + $"\"headings\":{{\"de\":\"{title}\"}},"
                                                     + $"\"contents\":{{\"de\": \"{text}\"}},"
                                                     + $"\"data\":{data},"
-                                                    + "\"included_segments\": [\"All\"],"
                                                     + $"\"filters\": [{filters}]}}");
 
             string responseContent = null;
