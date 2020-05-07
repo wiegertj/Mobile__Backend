@@ -78,7 +78,7 @@ namespace Mobile_Backend.Controllers
                 else if (entry.NormalGroup != null)
                 {
                     SimpleLongPolling.Publish($"group{entry.NormalGroup.Value}", entry.Id);
-                    _pushSender.SendSubGroupPush(entry.NormalGroup.Value, entry.Id, entry.Text);
+                    _pushSender.SendGroupPush(entry.NormalGroup.Value, entry.Id, entry.Text);
                 }
 
                 return Ok(_repository.DiscussionEntry.GetDiscussionEntryById(entry.Id));
