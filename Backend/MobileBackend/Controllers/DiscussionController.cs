@@ -23,13 +23,15 @@ namespace Mobile_Backend.Controllers
         private IRepositoryWrapper _repository;
         private IEmailSender _emailSender;
         private IConfiguration _config;
+        private IPushSender _pushSender;
 
-        public DiscussionController(ILoggerManager logger, IRepositoryWrapper repository, IEmailSender emailSender, IConfiguration config)
+        public DiscussionController(ILoggerManager logger, IRepositoryWrapper repository, IEmailSender emailSender, IConfiguration config, IPushSender pushSender)
         {
             _logger = logger;
             _repository = repository;
             _emailSender = emailSender;
             _config = config;
+            _pushSender = pushSender;
         }
 
         [Authorize]
@@ -71,10 +73,12 @@ namespace Mobile_Backend.Controllers
                 if (entry.Subgroup != null)
                 {
                     SimpleLongPolling.Publish($"subgroup{entry.Subgroup.Value}", entry.Id);
+                    _pushSender.SendSubGroupPush(entry.Subgroup.Value, entry.Id, entry.Text);
                 }
                 else if (entry.NormalGroup != null)
                 {
                     SimpleLongPolling.Publish($"group{entry.NormalGroup.Value}", entry.Id);
+                    _pushSender.SendSubGroupPush(entry.NormalGroup.Value, entry.Id, entry.Text);
                 }
 
                 return Ok(_repository.DiscussionEntry.GetDiscussionEntryById(entry.Id));
