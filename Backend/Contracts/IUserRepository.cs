@@ -11,5 +11,6 @@ namespace Contracts
         bool ValidateUser(User user);
         bool CheckIfExisting(String email);
         User GetUserByEmail(String email);
+        User GetUserById(long userId);
     }
 }

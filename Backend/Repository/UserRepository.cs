@@ -83,5 +83,18 @@ namespace Repository
 
             return userDb;
         }
+
+        public User GetUserById(long userId)
+        {
+            var userDb = FindByCondition(us => us.Id.Equals(userId))
+                .FirstOrDefault();
+
+            if (userDb == null)
+            {
+                return null;
+            }
+
+            return userDb;
+        }
     }
 }

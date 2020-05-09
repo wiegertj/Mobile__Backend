@@ -419,6 +419,36 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
+        [HttpGet, Route("get_admin_for_group/{groupId}")]
+        public IActionResult GetAdminForGroup(long groupId)
+        {
+            try
+            {
+                var group = _repository.Group.GetGroupById(groupId);
+
+                if (group == null)
+                {
+                    return BadRequest("Group was not found");
+                }
+
+                var admin = _repository.User.GetUserById(group.AdminUserId);
+
+                if (group == null)
+                {
+                    return BadRequest("Admin was not found");
+                }
+
+                return Ok(admin);
+
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Something went wrong inside GetAdminForGroup: {e.Message}");
+                return StatusCode(500, "Something went wrong during getting all admin groups");
+            }
+        }
+
+        [Authorize]
         [HttpGet, Route("get_user_groups")]
         public IActionResult GetAllGroupsForUser()
         {
