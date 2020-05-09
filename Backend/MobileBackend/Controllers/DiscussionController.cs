@@ -180,18 +180,12 @@ namespace Mobile_Backend.Controllers
         [HttpPost]
         [Route("group/file/{groupId?}")]
         [Route("sub_group/file/{subGroupId?}")]
-        public async System.Threading.Tasks.Task<IActionResult> UploadFileAsync(List<IFormFile> files, int? groupId, int? subGroupId)
+        public async System.Threading.Tasks.Task<IActionResult> UploadFileAsync([FromBody]IFormFile file, int? groupId, int? subGroupId)
         {
-            if (files == null)
+            if (file == null)
             {
                 _logger.LogError($"Invalid client request: object was null");
                 return BadRequest("Invalid client request: object was null");
-            }
-
-            if (files.Count > 1)
-            {
-                _logger.LogError($"Invalid client request: sent multiple files");
-                return BadRequest("Invalid client request: sent multiple files");
             }
 
             if (!groupId.HasValue && !subGroupId.HasValue)
@@ -201,7 +195,6 @@ namespace Mobile_Backend.Controllers
             }
             try
             {
-                var file = files.First();
                 var fileName = Path.GetRandomFileName();
                 var filePath = Path.Combine(_config["StoredFilesPath"], fileName);
 
