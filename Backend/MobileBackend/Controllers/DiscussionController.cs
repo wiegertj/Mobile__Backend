@@ -225,7 +225,7 @@ namespace Mobile_Backend.Controllers
                 {
                     await file.CopyToAsync(stream);
                 }
-                
+
                 _repository.File.PostFile(f);
 
                 return Ok(f);
