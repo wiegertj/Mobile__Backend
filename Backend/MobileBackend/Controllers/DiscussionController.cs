@@ -202,7 +202,7 @@ namespace Mobile_Backend.Controllers
             try
             {
                 var file = files.First();
-                var fileName = Path.GetRandomFileName();
+                var fileName = Path.ChangeExtension(Path.GetRandomFileName(), $".{fileType}");
                 var filePath = Path.Combine(_config["StoredFilesPath"], fileName);
                 
                 var f = new Entities.Models.File()
