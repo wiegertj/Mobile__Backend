@@ -179,7 +179,8 @@ namespace Mobile_Backend.Controllers
         [Authorize]
         [HttpPost]
         [Route("group/file/{groupId?}")]
-        public async System.Threading.Tasks.Task<IActionResult> UploadFileAsync([FromBody]IFormFile file, int? groupId)
+        [Route("sub_group/file/{subGroupId?}")]
+        public async System.Threading.Tasks.Task<IActionResult> UploadFileAsync([FromBody]IFormFile file, int? groupId, int? subGroupId)
         {
             if (file == null)
             {
@@ -187,7 +188,7 @@ namespace Mobile_Backend.Controllers
                 return BadRequest("Invalid client request: object was null");
             }
 
-            if (!groupId.HasValue)
+            if (!groupId.HasValue && !subGroupId.HasValue)
             {
                 _logger.LogError($"No Id in URL");
                 return BadRequest("No Id in URL");
@@ -207,12 +208,17 @@ namespace Mobile_Backend.Controllers
                     if (!CheckGroupAuthorized(groupId.Value)) { return Unauthorized(); }
                     f.NormalGroup = groupId.Value;
                 }
+                else if (subGroupId.HasValue)
+                {
+                    if (!CheckSubGroupAuthorized(groupId.Value)) { return Unauthorized(); }
+                    f.Subgroup = subGroupId.Value;
+                }
 
                 using (var stream = System.IO.File.Create(filePath))
                 {
                     await file.CopyToAsync(stream);
                 }
-                
+
                 _repository.File.PostFile(f);
 
                 return Ok(f);
