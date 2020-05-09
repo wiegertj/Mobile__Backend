@@ -9,6 +9,7 @@ namespace Entities.Models
         [Key]
         public long Id { get; set; }
         public string Path { get; set; }
+        public string FileType { get; set; }
         public long? Subgroup { get; set; }
         public long? NormalGroup { get; set; }
     }

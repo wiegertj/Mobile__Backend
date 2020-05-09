@@ -178,9 +178,9 @@ namespace Mobile_Backend.Controllers
 
         [Authorize]
         [HttpPost]
-        [Route("group/file/{groupId?}")]
-        [Route("sub_group/file/{subGroupId?}")]
-        public async System.Threading.Tasks.Task<IActionResult> UploadFileAsync(List<IFormFile> files, int? groupId, int? subGroupId)
+        [Route("group/file/{fileType}/{groupId?}")]
+        [Route("sub_group/file/{fileType}/{subGroupId?}")]
+        public async System.Threading.Tasks.Task<IActionResult> UploadFileAsync(List<IFormFile> files, string fileType, int? groupId, int? subGroupId)
         {
             if (files == null)
             {
@@ -204,10 +204,11 @@ namespace Mobile_Backend.Controllers
                 var file = files.First();
                 var fileName = Path.GetRandomFileName();
                 var filePath = Path.Combine(_config["StoredFilesPath"], fileName);
-
-                var f = new Entities.Models.File
+                
+                var f = new Entities.Models.File()
                 {
-                    Path = fileName
+                    Path = fileName,
+                    FileType = fileType
                 };
 
                 if (groupId.HasValue)
@@ -227,6 +228,7 @@ namespace Mobile_Backend.Controllers
                 }
 
                 _repository.File.PostFile(f);
+                _repository.Save();
 
                 return Ok(f);
             }
