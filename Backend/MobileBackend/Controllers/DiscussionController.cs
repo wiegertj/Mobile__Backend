@@ -208,6 +208,7 @@ namespace Mobile_Backend.Controllers
                 var f = new Entities.Models.File()
                 {
                     Path = fileName,
+                    FileName = file.FileName,
                     FileType = fileType
                 };
 
