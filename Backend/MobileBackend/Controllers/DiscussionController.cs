@@ -264,7 +264,7 @@ namespace Mobile_Backend.Controllers
             try
             {
                 _logger.LogInfo($"GroupId {groupId}");
-                if (!CheckGroupAuthorized(groupId)) { return Unauthorized(); }
+                //if (!CheckGroupAuthorized(groupId)) { return Unauthorized(); }
 
                 var entries = _repository.File.GetGroupFiles(groupId);
 
