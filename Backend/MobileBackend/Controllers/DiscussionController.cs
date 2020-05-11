@@ -178,9 +178,9 @@ namespace Mobile_Backend.Controllers
 
         [Authorize]
         [HttpPost]
-        [Route("group/file/{fileType}/{groupId?}")]
-        [Route("sub_group/file/{fileType}/{subGroupId?}")]
-        public async System.Threading.Tasks.Task<IActionResult> UploadFileAsync(List<IFormFile> files, string fileType, int? groupId, int? subGroupId)
+        [Route("group/file/{groupId?}")]
+        [Route("sub_group/file/{subGroupId?}")]
+        public async System.Threading.Tasks.Task<IActionResult> UploadFileAsync(List<IFormFile> files, int? groupId, int? subGroupId)
         {
             if (files == null)
             {
@@ -202,6 +202,7 @@ namespace Mobile_Backend.Controllers
             try
             {
                 var file = files.First();
+                var fileType = Path.GetExtension(file.FileName);
                 var fileName = Path.ChangeExtension(Path.GetRandomFileName(), $".{fileType}");
                 var filePath = Path.Combine(_config["StoredFilesPath"], fileName);
                 
