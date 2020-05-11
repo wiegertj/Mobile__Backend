@@ -203,6 +203,10 @@ namespace Mobile_Backend.Controllers
             {
                 var file = files.First();
                 var fileType = Path.GetExtension(file.FileName);
+                if (fileType.StartsWith('.'))
+                {
+                    fileType = fileType.Substring(1);
+                }
                 var fileName = Path.ChangeExtension(Path.GetRandomFileName(), $".{fileType}");
                 var filePath = Path.Combine(_config["StoredFilesPath"], fileName);
                 
