@@ -256,15 +256,14 @@ namespace Mobile_Backend.Controllers
             }
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpGet]
-        [Route("/group/files/{groupId}")]
+        [Route("/files/files/{groupId}")]
         public IActionResult GetGroupFiles(int groupId)
         {
             try
             {
-                _logger.LogInfo($"GroupId {groupId}");
-                //if (!CheckGroupAuthorized(groupId)) { return Unauthorized(); }
+                if (!CheckGroupAuthorized(groupId)) { return Unauthorized(); }
 
                 var entries = _repository.File.GetGroupFiles(groupId);
 
