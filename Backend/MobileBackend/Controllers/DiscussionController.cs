@@ -257,8 +257,7 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpGet]
-        [Route("/files/group/{groupId}")]
+        [HttpGet, Route("files/group/{groupId}")]
         public IActionResult GetGroupFiles(int groupId)
         {
             try
@@ -277,7 +276,7 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
-        [HttpGet, Route("/sub_group/files/{groupId}")]
+        [HttpGet, Route("files/sub_group/{groupId}")]
         public ActionResult GetSubGroupFiles(int groupId)
         {
             try
