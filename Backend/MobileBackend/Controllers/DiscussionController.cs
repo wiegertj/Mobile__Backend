@@ -256,7 +256,7 @@ namespace Mobile_Backend.Controllers
             }
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpGet]
         [Route("/group/files/{groupId}")]
         public IActionResult GetGroupFiles(int groupId)
