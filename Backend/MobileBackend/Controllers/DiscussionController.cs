@@ -56,7 +56,7 @@ namespace Mobile_Backend.Controllers
                 {
                     return Unauthorized();
                 }
-                else if (entry.Subgroup.HasValue && !CheckGroupAuthorized(entry.Subgroup.Value))
+                else if (entry.Subgroup.HasValue && !CheckSubGroupAuthorized(entry.Subgroup.Value))
                 {
                     return Unauthorized();
                 }
