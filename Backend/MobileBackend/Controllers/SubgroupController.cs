@@ -170,6 +170,94 @@ namespace Mobile_Backend.Controllers
         }
 
         [Authorize]
+        [HttpPost, Route("add_member_by_id")]
+        public IActionResult AddMemberById([FromBody]UserToSubgroup userToSubgroup)
+        {
+            if (userToSubgroup == null)
+            {
+                _logger.LogError($"Invalid client request: object was null");
+                return BadRequest("Invalid client request: object was null");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError($"Invalid client request: object was invalid");
+                return BadRequest("Invalid client request: object was invalid");
+            }
+
+            try
+            {
+                var subgroup = _repository.Subgroup.GetSubgroupById(userToSubgroup.SubgroupId);
+
+                if (subgroup == null)
+                {
+                    _logger.LogError("The subgroup was not found!");
+                    return BadRequest("The subgroup was not found!");
+                }
+
+                var userToAdd = _repository.User.GetUserById(userToSubgroup.UserId);
+
+                if (userToAdd == null)
+                {
+                    _logger.LogError("The User was not found!");
+                    return BadRequest("The User was not found!");
+                }
+
+                var mainGroup = _repository.Group.GetGroupById(subgroup.Main_group);
+                var allMainGroupMembers = _repository.UserToGroup.GetMembersForGroup(mainGroup);
+
+                var userIsMemberOfGroup = false;
+
+                foreach (var user in allMainGroupMembers)
+                {
+                    if (user.Id.Equals(userToAdd.Id))
+                    {
+                        userIsMemberOfGroup = true;
+                        break;
+                    }
+                }
+
+                if (!userIsMemberOfGroup)
+                {
+                    return BadRequest("User is not member of group so user cant be member of subgroup");
+                }
+
+                var allSubgroupMembers = _repository.UserToSubgroup.GetMembersForSubgroup(subgroup);
+
+                var userIsMemberOfSubgroup = false;
+
+                foreach (var user in allSubgroupMembers)
+                {
+                    if (user.Id.Equals(userToAdd.Id))
+                    {
+                        userIsMemberOfSubgroup = true;
+                        break;
+                    }
+                }
+
+                if (userIsMemberOfSubgroup)
+                {
+                    return BadRequest("User is already member of subgroup");
+                }
+
+                UserToSubgroup _userToSubgroup = new UserToSubgroup()
+                {
+                    SubgroupId = subgroup.Id,
+                    UserId = userToAdd.Id
+                };
+
+                _repository.UserToSubgroup.Create(_userToSubgroup);
+                _repository.Save();
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Something went wrong inside AddMemberById {e.Message}");
+                return StatusCode(500, $"Something went wrong while saving new subgroup member");
+            }         
+        }
+
+        [Authorize]
         [HttpPost, Route("add_member")]
         public IActionResult AddMembers([FromBody]UserToSubgroup userToSubgroup)
         {
