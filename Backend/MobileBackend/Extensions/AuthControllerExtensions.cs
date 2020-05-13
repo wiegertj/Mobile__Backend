@@ -56,8 +56,15 @@ namespace Mobile_Backend.Extensions
 
         public static string GenerateFirstPassword()
         {
-            Random generator = new Random();
-            return generator.Next(0, 999999).ToString("D6");
+            int passwordLength = 10;
+            const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+            StringBuilder res = new StringBuilder();
+            Random rnd = new Random();
+            while (0 < passwordLength--)
+            {
+                res.Append(chars[rnd.Next(chars.Length)]);
+            }
+            return res.ToString();
         }
 
         // Password needs to have at least one number, one upper char and has min. length 8 chars
