@@ -224,7 +224,7 @@ namespace Mobile_Backend.Controllers
                 }
                 else if (subGroupId.HasValue)
                 {
-                    if (!CheckSubGroupAuthorized(groupId.Value)) { return Unauthorized(); }
+                    if (!CheckSubGroupAuthorized(subGroupId.Value)) { return Unauthorized(); }
                     f.Subgroup = subGroupId.Value;
                 }
 
