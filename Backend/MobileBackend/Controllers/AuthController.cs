@@ -164,6 +164,11 @@ namespace Mobile_Backend.Controllers
                 return BadRequest("No password was sent!");
             }
 
+            if (!AuthControllerExtensions.ValidatePassword(user.Password))
+            {
+                return BadRequest("The password must have one number, one uppercased char and at least 8 chars!");
+            }
+
             dbUser.Password = user.Password;
 
             if (!ModelState.IsValid)
