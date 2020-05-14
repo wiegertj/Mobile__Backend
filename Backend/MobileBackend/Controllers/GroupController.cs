@@ -458,10 +458,7 @@ namespace Mobile_Backend.Controllers
             try
             {              
                 var myGroups = _repository.UserToGroup.GetGroupsForUser(loggedInUser).ToList();
-                _logger.LogError("Anzahl Gruppen:" + myGroups.Count);
-           
                 var mySubgroups = _repository.UserToSubgroup.GetSubgroupsForUser(loggedInUser).ToList();
-                _logger.LogError("Anzahl Subgruppen: " + mySubgroups.Count.ToString());
 
                 foreach (var subgroup in mySubgroups)
                 {
