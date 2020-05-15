@@ -17,5 +17,6 @@ namespace Entities.Models
         public long? AnswerTo { get; set; }
         public File File { get; set; }
         public string UserName { get; set; }
+        public int AnswerCount { get; set; }
     }
 }

@@ -17,14 +17,32 @@ namespace Repository
             return GetUserJoined(uts => uts.Id.Equals(id)).First();
         }
 
-        public IEnumerable<DiscussionEntryReturnType> GetGroupDiscussionEntries(long id, int? skip, int? take)
+        public IEnumerable<DiscussionEntryReturnType> GetGroupDiscussionEntries(long id, int? answertTo, int? skip, int? take)
         {
-            return GetUserJoined(uts => uts.NormalGroup.Equals(id), query => SkipAndTake(query, skip, take));
+            Expression<Func<DiscussionEntry, bool>> expr = null;
+            if (answertTo.HasValue)
+            {
+                expr = uts => uts.NormalGroup.Equals(id) && uts.AnswerTo.HasValue && uts.AnswerTo.Value == answertTo.Value;
+            }
+            else
+            {
+                 expr = uts => uts.NormalGroup.Equals(id) && !uts.AnswerTo.HasValue;
+            }
+            return GetUserJoined(expr, query => SkipAndTake(query, skip, take));
         }
 
-        public IEnumerable<DiscussionEntryReturnType> GetSubgroupDiscussionEntries(long id, int? skip, int? take)
+        public IEnumerable<DiscussionEntryReturnType> GetSubgroupDiscussionEntries(long id, int? answertTo, int? skip, int? take)
         {
-            return GetUserJoined(uts => uts.Subgroup.Equals(id), query => SkipAndTake(query, skip, take));
+            Expression<Func<DiscussionEntry, bool>> expr = null;
+            if (answertTo.HasValue)
+            {
+                expr = uts => uts.Subgroup.Equals(id) && uts.AnswerTo.HasValue && uts.AnswerTo.Value == answertTo.Value;
+            }
+            else
+            {
+                expr = uts => uts.Subgroup.Equals(id) && !uts.AnswerTo.HasValue;
+            }
+            return GetUserJoined(expr, query => SkipAndTake(query, skip, take));
         }
 
         private IList<DiscussionEntryReturnType> GetUserJoined(Expression<Func<DiscussionEntry, bool>> expression, Func<IQueryable<DiscussionEntryReturnType>, IQueryable<DiscussionEntryReturnType>> fun=null)
@@ -43,7 +61,8 @@ namespace Repository
                     UserId = discussionEntry.UserId,
                     AnswerTo = discussionEntry.AnswerTo,
                     File = discussionEntry.File,
-                    UserName = user.UserName
+                    UserName = user.UserName,
+                    AnswerCount = RepositoryContext.DiscussionEntries.Count(uts => uts.AnswerTo == discussionEntry.Id)
                 }).OrderBy(uts => uts.TimeStamp);
             if (fun != null)
                 v = fun(v);
