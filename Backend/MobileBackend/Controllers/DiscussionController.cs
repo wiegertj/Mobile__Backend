@@ -96,7 +96,7 @@ namespace Mobile_Backend.Controllers
         [Route("group/{groupId}/{skip?}")]
         [Route("group/{groupId}/{skip?}/{take?}")]
         [Route("group/{groupId}/{skip?}/{take?}/{answerTo?}")]
-        public IActionResult GetGroupDiscussionEntries(int groupId, int? answerTo, int? skip, int? take)
+        public IActionResult GetGroupDiscussionEntries(int groupId, int? skip, int? take, int? answerTo)
         {
             try
             {
