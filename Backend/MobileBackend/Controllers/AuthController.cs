@@ -100,7 +100,7 @@ namespace Mobile_Backend.Controllers
 
                 _emailSender.SendEmailAsync(user.Email, "Your password for Studi App", $"<b>Your password: {userPwd}</b>");
 
-                return NoContent();
+                return Accepted();
 
             } catch (Exception e)
 
@@ -136,7 +136,7 @@ namespace Mobile_Backend.Controllers
                 _repository.User.Update(dbUser);
                 _repository.Save();
 
-                return NoContent();
+                return Accepted();
             }
             catch (Exception e)
             {
@@ -182,7 +182,7 @@ namespace Mobile_Backend.Controllers
                 _repository.User.ChangePassword(dbUser);
                 _repository.Save();
 
-                return NoContent();
+                return Accepted();
             }
             catch (Exception e)
             {
@@ -263,7 +263,7 @@ namespace Mobile_Backend.Controllers
                 _repository.User.DeleteUser(dbUser);
                 _repository.Save();
 
-                return NoContent();            
+                return Accepted();            
             }
             catch(Exception e)
             {
@@ -300,7 +300,7 @@ namespace Mobile_Backend.Controllers
 
             _emailSender.SendEmailAsync(user.Email, "Your password for Studi App has been resetted.", $"<b>Your password: {newPassword}</b>");
 
-            return NoContent();
+            return Accepted();
 
         }
 

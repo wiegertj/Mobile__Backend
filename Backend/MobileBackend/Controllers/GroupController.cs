@@ -122,7 +122,7 @@ namespace Mobile_Backend.Controllers
                 _repository.Group.DeleteGroup(group);
                 _repository.Save();
 
-                return NoContent();
+                return Accepted();
             }
             catch(Exception e)
             {
@@ -163,7 +163,7 @@ namespace Mobile_Backend.Controllers
                     dbGroup.Map(group);
                     _repository.Group.Update(dbGroup);
                     _repository.Save();
-                    return NoContent();
+                    return Accepted();
                 }
 
                 _logger.LogError("Only admin can change group");
@@ -241,7 +241,7 @@ namespace Mobile_Backend.Controllers
                     };
                     _repository.UserToGroup.AddMembership(userToGroupPublic);
                     _repository.Save();
-                    return NoContent();
+                    return Accepted();
                 }
 
                 var userMail = AuthControllerExtensions.JwtNameExtractor(Request.Headers["Authorization"]);
@@ -261,7 +261,7 @@ namespace Mobile_Backend.Controllers
 
                 _repository.UserToGroup.AddMembership(userToGroup);
                 _repository.Save();
-                return NoContent();
+                return Accepted();
             }
 
             catch (Exception e)
@@ -336,7 +336,7 @@ namespace Mobile_Backend.Controllers
                     if (deleted)
                     {
                         _repository.Save();
-                        return NoContent();
+                        return Accepted();
                     }
 
                     _logger.LogError($"User is no member of this group!");
@@ -409,7 +409,7 @@ namespace Mobile_Backend.Controllers
                     return Ok(adminGroups);
                 }
 
-                return NoContent();
+                return Accepted();
             }
             catch (Exception e)
             {
