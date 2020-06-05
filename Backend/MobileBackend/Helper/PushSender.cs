@@ -4,18 +4,28 @@ using System.Text;
 using System;
 using NLog;
 using Contracts;
+using System.Collections.Generic;
+using Entities.Models;
 
 namespace Mobile_Backend.Helper
 {
     public class PushSender : IPushSender
     {
         private ILogger Logger = LogManager.GetCurrentClassLogger();
+        private IRepositoryWrapper _repository;
+
+        public PushSender(IRepositoryWrapper repository)
+        {
+            _repository = repository;
+        }
 
         public void SendGroupPush(long groupId, long entryId, string text)
         {
+            var group = _repository.Group.GetGroupById(groupId);
+            IEnumerable<User> groupUsers = _repository.UserToGroup.GetMembersForGroup(group);
+
             SendPush(
-                $"{{\"field\":\"tag\",\"key\":\"Group{groupId}\",\"relation\":\"exists\"}},"
-                + $"{{\"field\":\"tag\",\"key\":\"Group{groupId}\",\"relation\":\"=\",\"value\":\"true\"}}",
+                groupUsers,
                 $"{{\"GroupId\":{groupId},\"EntryId\":{entryId}}}",
                 text,
                 "Neue Gruppennachricht");
@@ -23,15 +33,17 @@ namespace Mobile_Backend.Helper
 
         public void SendSubGroupPush(long groupId, long entryId, string text)
         {
+            var group = _repository.Subgroup.GetSubgroupById(groupId);
+            IEnumerable<User> subGroupUsers = _repository.UserToSubgroup.GetMembersForSubgroup(group);
+
             SendPush(
-                $"{{\"field\":\"tag\",\"key\":\"SubGroup{groupId}\",\"relation\":\"exists\"}},"
-                + $"{{\"field\":\"tag\",\"key\":\"SubGroup{groupId}\",\"relation\":\"=\",\"value\":\"true\"}}",
+                subGroupUsers,
                 $"{{\"SubGroupId\":{groupId},\"EntryId\":{entryId}}}",
                 text,
                 "Neue Untergruppennachricht");
         }
 
-        private void SendPush(string filters, string data, string text, string title)
+        private void SendPush(IEnumerable<User> users, string data, string text, string title)
         {
             var request = WebRequest.Create("https://onesignal.com/api/v1/notifications") as HttpWebRequest;
 
@@ -41,12 +53,23 @@ namespace Mobile_Backend.Helper
 
             request.Headers.Add("authorization", "Basic OGQ0OWMzYjYtZTNhNC00MDk4LWE4ZjEtYjk5Nzg3NWZiNTAx");
 
+            string filter = "";
+            foreach (User user in users)
+            {
+                if (filter != "")
+                {
+                    filter += "{\"operator\": \"OR\"},";
+                }
+
+                filter += $"{{\"field\":\"tag\",\"key\":\"user\",\"relation\":\"=\",\"value\":\"{user.Email}\"}}";
+            }
+
             byte[] byteArray = Encoding.UTF8.GetBytes("{"
                                                     + "\"app_id\": \"71f3050c-2a04-4d17-81ec-33f76361bf19\","
                                                     + $"\"headings\":{{\"de\":\"{title}\"}},"
                                                     + $"\"contents\":{{\"de\": \"{text}\"}},"
                                                     + $"\"data\":{data},"
-                                                    + $"\"filters\": [{filters}]}}");
+                                                    + $"\"filters\": [{filter}]}}");
 
             string responseContent = null;
 
