@@ -110,7 +110,7 @@ namespace Mobile_Backend.Controllers
                     _repository.Subgroup.Delete(subgroup);
                     _repository.Save();
 
-                    return NoContent();
+                    return Accepted();
                 }
 
                 return BadRequest("Only admin of main group can delete subgroup");
@@ -156,7 +156,7 @@ namespace Mobile_Backend.Controllers
                     dbSubgroup.Map(subgroup);
                     _repository.Subgroup.Update(dbSubgroup);
                     _repository.Save();
-                    return NoContent();
+                    return Accepted();
                 }
 
                 _logger.LogError("Only admin can change subgroup");
@@ -248,7 +248,7 @@ namespace Mobile_Backend.Controllers
 
                 _repository.UserToSubgroup.Create(_userToSubgroup);
                 _repository.Save();
-                return NoContent();
+                return Accepted();
             }
             catch (Exception e)
             {
@@ -332,7 +332,7 @@ namespace Mobile_Backend.Controllers
 
                 _repository.UserToSubgroup.Create(_userToSubgroup);
                 _repository.Save();
-                return NoContent();
+                return Accepted();
             }
             catch (Exception e)
             {
@@ -385,7 +385,7 @@ namespace Mobile_Backend.Controllers
                             _repository.UserToSubgroup.DeleteMembership(ms);
                             _repository.Save();
 
-                            return NoContent();
+                            return Accepted();
                         }
                     }
                 }
