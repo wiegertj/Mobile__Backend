@@ -58,7 +58,7 @@ namespace Mobile_Backend.Helper
             {
                 if (filter != "")
                 {
-                    filter += "{\"operator\": \"OR\"},";
+                    filter += ",{\"operator\": \"OR\"},";
                 }
 
                 filter += $"{{\"field\":\"tag\",\"key\":\"user\",\"relation\":\"=\",\"value\":\"{user.Email}\"}}";
