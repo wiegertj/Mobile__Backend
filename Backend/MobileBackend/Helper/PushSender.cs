@@ -66,8 +66,8 @@ namespace Mobile_Backend.Helper
 
             byte[] byteArray = Encoding.UTF8.GetBytes("{"
                                                     + "\"app_id\": \"71f3050c-2a04-4d17-81ec-33f76361bf19\","
-                                                    + $"\"headings\":{{\"de\":\"{title}\"}},"
-                                                    + $"\"contents\":{{\"de\": \"{text}\"}},"
+                                                    + $"\"headings\":{{\"en\":\"{title}\"}},"
+                                                    + $"\"contents\":{{\"en\": \"{text}\"}},"
                                                     + $"\"data\":{data},"
                                                     + $"\"filters\": [{filter}]}}");
 
