@@ -28,7 +28,7 @@ namespace Mobile_Backend.Helper
                 groupUsers,
                 $"{{\"GroupId\":{groupId},\"EntryId\":{entryId}}}",
                 text,
-                "Neue Gruppennachricht",
+                $"Neue Gruppennachricht in {group.Name}",
                 userId);
         }
 
@@ -41,7 +41,7 @@ namespace Mobile_Backend.Helper
                 subGroupUsers,
                 $"{{\"SubGroupId\":{groupId},\"EntryId\":{entryId}}}",
                 text,
-                "Neue Untergruppennachricht",
+                $"Neue Untergruppennachricht in {group.Name}",
                 userId);
         }
 
