@@ -73,12 +73,12 @@ namespace Mobile_Backend.Controllers
                 if (entry.Subgroup != null)
                 {
                     SimpleLongPolling.Publish($"subgroup{entry.Subgroup.Value}", entry.Id);
-                    _pushSender.SendSubGroupPush(entry.Subgroup.Value, entry.Id, entry.Text);
+                    _pushSender.SendSubGroupPush(entry.Subgroup.Value, entry.Id, entry.Text, dbUser.Id);
                 }
                 else if (entry.NormalGroup != null)
                 {
                     SimpleLongPolling.Publish($"group{entry.NormalGroup.Value}", entry.Id);
-                    _pushSender.SendGroupPush(entry.NormalGroup.Value, entry.Id, entry.Text);
+                    _pushSender.SendGroupPush(entry.NormalGroup.Value, entry.Id, entry.Text, dbUser.Id);
                 }
 
                 return Ok(_repository.DiscussionEntry.GetDiscussionEntryById(entry.Id));

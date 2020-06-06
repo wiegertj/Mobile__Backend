@@ -5,7 +5,7 @@ namespace Contracts
 {
     public interface IPushSender
     {
-        void SendGroupPush(long groupId, long entryId, string text);
-        void SendSubGroupPush(long groupId, long entryId, string text);
+        void SendGroupPush(long groupId, long entryId, string text, long userId);
+        void SendSubGroupPush(long groupId, long entryId, string text, long userId);
     }
 }

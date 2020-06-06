@@ -19,7 +19,7 @@ namespace Mobile_Backend.Helper
             _repository = repository;
         }
 
-        public void SendGroupPush(long groupId, long entryId, string text)
+        public void SendGroupPush(long groupId, long entryId, string text, long userId)
         {
             var group = _repository.Group.GetGroupById(groupId);
             IEnumerable<User> groupUsers = _repository.UserToGroup.GetMembersForGroup(group);
@@ -28,10 +28,11 @@ namespace Mobile_Backend.Helper
                 groupUsers,
                 $"{{\"GroupId\":{groupId},\"EntryId\":{entryId}}}",
                 text,
-                "Neue Gruppennachricht");
+                "Neue Gruppennachricht",
+                userId);
         }
 
-        public void SendSubGroupPush(long groupId, long entryId, string text)
+        public void SendSubGroupPush(long groupId, long entryId, string text, long userId)
         {
             var group = _repository.Subgroup.GetSubgroupById(groupId);
             IEnumerable<User> subGroupUsers = _repository.UserToSubgroup.GetMembersForSubgroup(group);
@@ -40,10 +41,11 @@ namespace Mobile_Backend.Helper
                 subGroupUsers,
                 $"{{\"SubGroupId\":{groupId},\"EntryId\":{entryId}}}",
                 text,
-                "Neue Untergruppennachricht");
+                "Neue Untergruppennachricht",
+                userId);
         }
 
-        private void SendPush(IEnumerable<User> users, string data, string text, string title)
+        private void SendPush(IEnumerable<User> users, string data, string text, string title, long userId)
         {
             var request = WebRequest.Create("https://onesignal.com/api/v1/notifications") as HttpWebRequest;
 
@@ -56,6 +58,8 @@ namespace Mobile_Backend.Helper
             string filter = "";
             foreach (User user in users)
             {
+                if (user.Id.Equals(userId))
+                    continue;
                 if (filter != "")
                 {
                     filter += ",{\"operator\": \"OR\"},";
@@ -64,14 +68,17 @@ namespace Mobile_Backend.Helper
                 filter += $"{{\"field\":\"tag\",\"key\":\"user\",\"relation\":\"=\",\"value\":\"{user.Email}\"}}";
             }
 
-            byte[] byteArray = Encoding.UTF8.GetBytes("{"
-                                                    + "\"app_id\": \"71f3050c-2a04-4d17-81ec-33f76361bf19\","
-                                                    + $"\"headings\":{{\"en\":\"{title}\"}},"
-                                                    + $"\"contents\":{{\"en\": \"{text}\"}},"
-                                                    + $"\"data\":{data},"
-                                                    + $"\"filters\": [{filter}]}}");
+            string body = "{"
+                + "\"app_id\": \"71f3050c-2a04-4d17-81ec-33f76361bf19\","
+                + $"\"headings\":{{\"en\":\"{title}\"}},"
+                + $"\"contents\":{{\"en\": \"{text}\"}},"
+                + $"\"data\":{data},"
+                + $"\"filters\": [{filter}]}}";
+            byte[] byteArray = Encoding.UTF8.GetBytes(body);
 
             string responseContent = null;
+
+            Logger.Info(body);
 
             try
             {
